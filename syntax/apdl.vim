@@ -1,16 +1,20 @@
 " Vim syntax file
 " Language:		APDL
 " Maintainer:	Manfred Spraul <manfred@colorfullife.com>
-" Last Change:	2003 Jan 23
-" Version: 0.01
+" Last Change:	2003 Jan 24
+" Version: 0.02
 "
 " Note: The support for abreviated commands is intentionally missing.
 " 	Typical file names are *.ans and *.mac.
 "
 " TODO: 
-" * highlight parameters (cm,newcm, <highlighted>volu</highlighted>)
-" * detect incorrect parameters (cm,newcm,<bad>unknown</bad>)
-" * detect abreviated commands with the 'wrong' tail
+" * Further parameter tests for bad params
+" * line continuations for multiline commands: *msg, *vwrite, etc.
+" * test with ansys:
+"     whitespaces + labels
+"     $ + labels
+"     $ + comment
+"     $ + multiline commands
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Common part for all syntax files:
@@ -24,9 +28,6 @@ elseif exists("b:current_syntax")
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" APDL specific part:
-syn match	apdlComment		"!.*$"
-
 " Numbers, allowing signs (both -, and +)
 " Integer number.
 syn match  apdlNumber		display "[+-]\=\<\d\+\>"
@@ -44,1449 +45,1398 @@ syn match  apdlFloat	display "\.\d\+\(e[-+]\=\d\+\)\=\>"
 syn match  apdlFloat	display "\<\d\+e[-+]\=\d\+\>"
 syn case match
 
-" interesting strings:
-syn keyword	apdlTodo	contained TODO FIXME XXX
-
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" APDL specific part:
 syn case ignore
+
 " normal apdl commands
-" Missing in autoextracted file:
-syn match apdlFunction display "^[[:blank:]]*asel\>"
-" autoextracted from a few files from the ANSYS 5.7.1 html documentation with
-" the script
-"
-" #!/bin/bash
-" for i in *.html;do
-"	grep '_top' < $i |
-"		sed -e 's,^.*<b>,^[[:blank:]],' -e 's,</b>.*$,,' |
-"		gawk '{printf("syn match apdlStatement display \"%s\\>\"\n",$1);}' |
-"		sed -e 's,\*,\\*,g'
-" done
-"
-syn match apdlFunction display "^[[:blank:]]*/AUX12\>"
-syn match apdlFunction display "^[[:blank:]]*EMIS\>"
-syn match apdlFunction display "^[[:blank:]]*GEOM\>"
-syn match apdlFunction display "^[[:blank:]]*MPRINT\>"
-syn match apdlFunction display "^[[:blank:]]*SPACE\>"
-syn match apdlFunction display "^[[:blank:]]*STEF\>"
-syn match apdlFunction display "^[[:blank:]]*VTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*WRITE\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX15\>"
-syn match apdlFunction display "^[[:blank:]]*IGESIN\>"
-syn match apdlFunction display "^[[:blank:]]*IOPTN\>"
-syn match apdlFunction display "^[[:blank:]]*RALL\>"
-syn match apdlFunction display "^[[:blank:]]*RFILSZ\>"
-syn match apdlFunction display "^[[:blank:]]*RITER\>"
-syn match apdlFunction display "^[[:blank:]]*RMEMRY\>"
-syn match apdlFunction display "^[[:blank:]]*RSPEED\>"
-syn match apdlFunction display "^[[:blank:]]*RSTAT\>"
-syn match apdlFunction display "^[[:blank:]]*RTIMST\>"
-syn match apdlFunction display "^[[:blank:]]*/RUNST\>"
-syn match apdlFunction display "^[[:blank:]]*RWFRNT\>"
-syn match apdlFunction display "^[[:blank:]]*OPEQN\>"
-syn match apdlFunction display "^[[:blank:]]*OPFACT\>"
-syn match apdlFunction display "^[[:blank:]]*OPFRST\>"
-syn match apdlFunction display "^[[:blank:]]*OPGRAD\>"
-syn match apdlFunction display "^[[:blank:]]*OPKEEP\>"
-syn match apdlFunction display "^[[:blank:]]*OPLOOP\>"
-syn match apdlFunction display "^[[:blank:]]*OPPRNT\>"
-syn match apdlFunction display "^[[:blank:]]*OPRAND\>"
-syn match apdlFunction display "^[[:blank:]]*OPSUBP\>"
-syn match apdlFunction display "^[[:blank:]]*OPSWEEP\>"
-syn match apdlFunction display "^[[:blank:]]*/OPT\>"
-syn match apdlFunction display "^[[:blank:]]*OPTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*OPUSER\>"
-syn match apdlFunction display "^[[:blank:]]*OPVAR\>"
-syn match apdlFunction display "^[[:blank:]]*TOCOMP\>"
-syn match apdlFunction display "^[[:blank:]]*TODEF\>"
-syn match apdlFunction display "^[[:blank:]]*TOFREQ\>"
-syn match apdlFunction display "^[[:blank:]]*TOTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*TOVAR\>"
-syn match apdlFunction display "^[[:blank:]]*OPADD\>"
-syn match apdlFunction display "^[[:blank:]]*OPCLR\>"
-syn match apdlFunction display "^[[:blank:]]*OPDEL\>"
-syn match apdlFunction display "^[[:blank:]]*OPMAKE\>"
-syn match apdlFunction display "^[[:blank:]]*OPSEL\>"
-syn match apdlFunction display "^[[:blank:]]*OPANL\>"
-syn match apdlFunction display "^[[:blank:]]*OPDATA\>"
-syn match apdlFunction display "^[[:blank:]]*OPRESU\>"
-syn match apdlFunction display "^[[:blank:]]*OPSAVE\>"
-syn match apdlFunction display "^[[:blank:]]*OPEXE\>"
-syn match apdlFunction display "^[[:blank:]]*TOEXE\>"
-syn match apdlFunction display "^[[:blank:]]*TOLOOP\>"
-syn match apdlFunction display "^[[:blank:]]*OPLFA\>"
-syn match apdlFunction display "^[[:blank:]]*OPLGR\>"
-syn match apdlFunction display "^[[:blank:]]*OPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*OPLSW\>"
-syn match apdlFunction display "^[[:blank:]]*OPRFA\>"
-syn match apdlFunction display "^[[:blank:]]*OPRGR\>"
-syn match apdlFunction display "^[[:blank:]]*OPRSW\>"
-syn match apdlFunction display "^[[:blank:]]*PLVAROPT\>"
-syn match apdlFunction display "^[[:blank:]]*PRVAROPT\>"
-syn match apdlFunction display "^[[:blank:]]*TOGRAPH\>"
-syn match apdlFunction display "^[[:blank:]]*TOLIST\>"
-syn match apdlFunction display "^[[:blank:]]*TOPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*TOPRINT\>"
-syn match apdlFunction display "^[[:blank:]]*TOSTAT\>"
-syn match apdlFunction display "^[[:blank:]]*XVAROPT\>"
-syn match apdlFunction display "^[[:blank:]]*/CMAP\>"
-syn match apdlFunction display "^[[:blank:]]*/DEVDISP\>"
-syn match apdlFunction display "^[[:blank:]]*FILEDISP\>"
-syn match apdlFunction display "^[[:blank:]]*HELPDISP\>"
-syn match apdlFunction display "^[[:blank:]]*NOCOLOR\>"
-syn match apdlFunction display "^[[:blank:]]*/SEG\>"
-syn match apdlFunction display "^[[:blank:]]*/SHOWDISP\>"
-syn match apdlFunction display "^[[:blank:]]*TRANS\>"
-syn match apdlFunction display "^[[:blank:]]*TERM\>"
-syn match apdlFunction display "^[[:blank:]]*FINISH\>"
-syn match apdlFunction display "^[[:blank:]]*PLOT\>"
-syn match apdlFunction display "^[[:blank:]]*STAT\>"
-syn match apdlFunction display "^[[:blank:]]*/CLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*RESUME\>"
-syn match apdlFunction display "^[[:blank:]]*SAVE\>"
-syn match apdlFunction display "^[[:blank:]]*STAT\>"
-syn match apdlFunction display "^[[:blank:]]*/STITLE\>"
-syn match apdlFunction display "^[[:blank:]]*/TITLE\>"
-syn match apdlFunction display "^[[:blank:]]*UNDO\>"
-syn match apdlFunction display "^[[:blank:]]*RESUME\>"
-syn match apdlFunction display "^[[:blank:]]*SAVE\>"
-syn match apdlFunction display "^[[:blank:]]*/UNITS\>"
-syn match apdlFunction display "^[[:blank:]]*ALLSEL\>"
-syn match apdlFunction display "^[[:blank:]]*ASLL\>"
-syn match apdlFunction display "^[[:blank:]]*ASLV\>"
-syn match apdlFunction display "^[[:blank:]]*DOFSEL\>"
-syn match apdlFunction display "^[[:blank:]]*ESEL\>"
-syn match apdlFunction display "^[[:blank:]]*ESLA\>"
-syn match apdlFunction display "^[[:blank:]]*ESLL\>"
-syn match apdlFunction display "^[[:blank:]]*ESLN\>"
-syn match apdlFunction display "^[[:blank:]]*ESLV\>"
-syn match apdlFunction display "^[[:blank:]]*KSEL\>"
-syn match apdlFunction display "^[[:blank:]]*KSLL\>"
-syn match apdlFunction display "^[[:blank:]]*KSLN\>"
-syn match apdlFunction display "^[[:blank:]]*LSEL\>"
-syn match apdlFunction display "^[[:blank:]]*LSLA\>"
-syn match apdlFunction display "^[[:blank:]]*LSLK\>"
-syn match apdlFunction display "^[[:blank:]]*NSEL\>"
-syn match apdlFunction display "^[[:blank:]]*NSLA\>"
-syn match apdlFunction display "^[[:blank:]]*NSLE\>"
-syn match apdlFunction display "^[[:blank:]]*NSLK\>"
-syn match apdlFunction display "^[[:blank:]]*NSLL\>"
-syn match apdlFunction display "^[[:blank:]]*NSLV\>"
-syn match apdlFunction display "^[[:blank:]]*PARTSEL\>"
-syn match apdlFunction display "^[[:blank:]]*VSEL\>"
-syn match apdlFunction display "^[[:blank:]]*VSLA\>"
-syn match apdlFunction display "^[[:blank:]]*CM\>"
-syn match apdlFunction display "^[[:blank:]]*CMDELE\>"
-syn match apdlFunction display "^[[:blank:]]*CMEDIT\>"
-syn match apdlFunction display "^[[:blank:]]*CMGRP\>"
-syn match apdlFunction display "^[[:blank:]]*CMLIST\>"
-syn match apdlFunction display "^[[:blank:]]*CMPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*CMSEL\>"
-syn match apdlFunction display "^[[:blank:]]*KWPAVE\>"
-syn match apdlFunction display "^[[:blank:]]*KWPLAN\>"
-syn match apdlFunction display "^[[:blank:]]*LWPLAN\>"
-syn match apdlFunction display "^[[:blank:]]*NWPAVE\>"
-syn match apdlFunction display "^[[:blank:]]*NWPLAN\>"
-syn match apdlFunction display "^[[:blank:]]*WPAVE\>"
-syn match apdlFunction display "^[[:blank:]]*WPCSYS\>"
-syn match apdlFunction display "^[[:blank:]]*WPLANE\>"
-syn match apdlFunction display "^[[:blank:]]*WPOFFS\>"
-syn match apdlFunction display "^[[:blank:]]*WPROTA\>"
-syn match apdlFunction display "^[[:blank:]]*WPSTYL\>"
-syn match apdlFunction display "^[[:blank:]]*CLOCAL\>"
-syn match apdlFunction display "^[[:blank:]]*CS\>"
-syn match apdlFunction display "^[[:blank:]]*CSCIR\>"
-syn match apdlFunction display "^[[:blank:]]*CSDELE\>"
-syn match apdlFunction display "^[[:blank:]]*CSKP\>"
-syn match apdlFunction display "^[[:blank:]]*CSLIST\>"
-syn match apdlFunction display "^[[:blank:]]*CSWPLA\>"
-syn match apdlFunction display "^[[:blank:]]*CSYS\>"
-syn match apdlFunction display "^[[:blank:]]*LOCAL\>"
-syn match apdlFunction display "^[[:blank:]]*FITEM\>"
-syn match apdlFunction display "^[[:blank:]]*FLST\>"
-syn match apdlFunction display "^[[:blank:]]*/CMAP\>"
-syn match apdlFunction display "^[[:blank:]]*/COLOR\>"
-syn match apdlFunction display "^[[:blank:]]*/DEVICE\>"
-syn match apdlFunction display "^[[:blank:]]*DSYS\>"
-syn match apdlFunction display "^[[:blank:]]*/DV3D\>"
-syn match apdlFunction display "^[[:blank:]]*/ERASE\>"
-syn match apdlFunction display "^[[:blank:]]*ERASE\>"
-syn match apdlFunction display "^[[:blank:]]*/GCMD\>"
-syn match apdlFunction display "^[[:blank:]]*GPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*/GFILE\>"
-syn match apdlFunction display "^[[:blank:]]*GPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*/GRAPHICS\>"
-syn match apdlFunction display "^[[:blank:]]*/GRESUME\>"
-syn match apdlFunction display "^[[:blank:]]*/GSAVE\>"
-syn match apdlFunction display "^[[:blank:]]*GPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*HPGL\>"
-syn match apdlFunction display "^[[:blank:]]*IMMED\>"
-syn match apdlFunction display "^[[:blank:]]*JPEG\>"
-syn match apdlFunction display "^[[:blank:]]*/MREP\>"
-syn match apdlFunction display "^[[:blank:]]*/NOERASE\>"
-syn match apdlFunction display "^[[:blank:]]*/PCOPY\>"
-syn match apdlFunction display "^[[:blank:]]*PSCR\>"
-syn match apdlFunction display "^[[:blank:]]*/PSTATUS\>"
-syn match apdlFunction display "^[[:blank:]]*/REPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*/RESET\>"
-syn match apdlFunction display "^[[:blank:]]*/SEG\>"
-syn match apdlFunction display "^[[:blank:]]*/SHOW\>"
-syn match apdlFunction display "^[[:blank:]]*TIFF\>"
-syn match apdlFunction display "^[[:blank:]]*/WINDOW\>"
-syn match apdlFunction display "^[[:blank:]]*/ANGLE\>"
-syn match apdlFunction display "^[[:blank:]]*/AUTO\>"
-syn match apdlFunction display "^[[:blank:]]*/DIST\>"
-syn match apdlFunction display "^[[:blank:]]*/FOCUS\>"
-syn match apdlFunction display "^[[:blank:]]*/FOCUS\>"
-syn match apdlFunction display "^[[:blank:]]*/DIST\>"
-syn match apdlFunction display "^[[:blank:]]*/VCONE\>"
-syn match apdlFunction display "^[[:blank:]]*/VIEW\>"
-syn match apdlFunction display "^[[:blank:]]*/VUP\>"
-syn match apdlFunction display "^[[:blank:]]*/XFRM\>"
-syn match apdlFunction display "^[[:blank:]]*/ZOOM\>"
-syn match apdlFunction display "^[[:blank:]]*/DSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*/ICLWID\>"
-syn match apdlFunction display "^[[:blank:]]*/ICSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*/RATIO\>"
-syn match apdlFunction display "^[[:blank:]]*/SHRINK\>"
-syn match apdlFunction display "^[[:blank:]]*/SSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*/TXTRE\>"
-syn match apdlFunction display "^[[:blank:]]*/VSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*/CPLANE\>"
-syn match apdlFunction display "^[[:blank:]]*/CTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*/EDGE\>"
-syn match apdlFunction display "^[[:blank:]]*/ESHAPE\>"
-syn match apdlFunction display "^[[:blank:]]*/FACET\>"
-syn match apdlFunction display "^[[:blank:]]*/GLINE\>"
-syn match apdlFunction display "^[[:blank:]]*/LIGHT\>"
-syn match apdlFunction display "^[[:blank:]]*/NORMAL\>"
-syn match apdlFunction display "^[[:blank:]]*/SHADE\>"
-syn match apdlFunction display "^[[:blank:]]*/TRLCY\>"
-syn match apdlFunction display "^[[:blank:]]*/TYPE\>"
-syn match apdlFunction display "^[[:blank:]]*/CLABEL\>"
-syn match apdlFunction display "^[[:blank:]]*/CONTOUR\>"
-syn match apdlFunction display "^[[:blank:]]*/CVAL\>"
-syn match apdlFunction display "^[[:blank:]]*/GFORMAT\>"
-syn match apdlFunction display "^[[:blank:]]*/NUMBER\>"
-syn match apdlFunction display "^[[:blank:]]*/PBC\>"
-syn match apdlFunction display "^[[:blank:]]*/PBF\>"
-syn match apdlFunction display "^[[:blank:]]*/PICE\>"
-syn match apdlFunction display "^[[:blank:]]*/PLOPTS\>"
-syn match apdlFunction display "^[[:blank:]]*/PNUM\>"
-syn match apdlFunction display "^[[:blank:]]*/PSF\>"
-syn match apdlFunction display "^[[:blank:]]*/PSYMB\>"
-syn match apdlFunction display "^[[:blank:]]*/TRIAD\>"
-syn match apdlFunction display "^[[:blank:]]*/AXLAB\>"
-syn match apdlFunction display "^[[:blank:]]*/GRID\>"
-syn match apdlFunction display "^[[:blank:]]*/GROPT\>"
-syn match apdlFunction display "^[[:blank:]]*/GRTYP\>"
-syn match apdlFunction display "^[[:blank:]]*/GTHK\>"
-syn match apdlFunction display "^[[:blank:]]*/XRANGE\>"
-syn match apdlFunction display "^[[:blank:]]*/YRANGE\>"
-syn match apdlFunction display "^[[:blank:]]*/AN3D\>"
-syn match apdlFunction display "^[[:blank:]]*/ANNOT\>"
-syn match apdlFunction display "^[[:blank:]]*/ANUM\>"
-syn match apdlFunction display "^[[:blank:]]*/LARC\>"
-syn match apdlFunction display "^[[:blank:]]*/LINE\>"
-syn match apdlFunction display "^[[:blank:]]*/LSPEC\>"
-syn match apdlFunction display "^[[:blank:]]*/LSYMBOL\>"
-syn match apdlFunction display "^[[:blank:]]*/PCIRCLE\>"
-syn match apdlFunction display "^[[:blank:]]*/PMORE\>"
-syn match apdlFunction display "^[[:blank:]]*/POLYGON\>"
-syn match apdlFunction display "^[[:blank:]]*/PSPEC\>"
-syn match apdlFunction display "^[[:blank:]]*/PWEDGE\>"
-syn match apdlFunction display "^[[:blank:]]*/TLABEL\>"
-syn match apdlFunction display "^[[:blank:]]*/TSPEC\>"
-syn match apdlFunction display "^[[:blank:]]*\*AFUN\>"
-syn match apdlFunction display "^[[:blank:]]*\*ASK\>"
-syn match apdlFunction display "^[[:blank:]]*\*DEL\>"
-syn match apdlFunction display "^[[:blank:]]*\*DIM\>"
-syn match apdlFunction display "^[[:blank:]]*\*GET\>"
-syn match apdlFunction display "^[[:blank:]]*PARRES\>"
-syn match apdlFunction display "^[[:blank:]]*PARSAV\>"
-syn match apdlFunction display "^[[:blank:]]*\*SET\>"
-syn match apdlFunction display "^[[:blank:]]*\*STATUS\>"
-syn match apdlFunction display "^[[:blank:]]*\*TREAD\>"
-syn match apdlFunction display "^[[:blank:]]*\*VFILL\>"
-syn match apdlFunction display "^[[:blank:]]*\*VGET\>"
-syn match apdlFunction display "^[[:blank:]]*\*VREAD\>"
-syn match apdlFunction display "^[[:blank:]]*\*CFCLOS\>"
-syn match apdlFunction display "^[[:blank:]]*\*CFOPEN\>"
-syn match apdlFunction display "^[[:blank:]]*\*CFWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*\*CREATE\>"
-syn match apdlFunction display "^[[:blank:]]*\*END\>"
-syn match apdlFunction display "^[[:blank:]]*\*MSG\>"
-syn match apdlFunction display "^[[:blank:]]*/PMACRO\>"
-syn match apdlFunction display "^[[:blank:]]*/PSEARCH\>"
-syn match apdlFunction display "^[[:blank:]]*/TEE\>"
-syn match apdlFunction display "^[[:blank:]]*\*ULIB\>"
-syn match apdlFunction display "^[[:blank:]]*\*USE\>"
-syn match apdlFunction display "^[[:blank:]]*\*ABBR\>"
-syn match apdlFunction display "^[[:blank:]]*ABBRES\>"
-syn match apdlFunction display "^[[:blank:]]*ABBSAV\>"
-syn match apdlFunction display "^[[:blank:]]*/UCMD\>"
-syn match apdlFunction display "^[[:blank:]]*\*MFOURI\>"
-syn match apdlFunction display "^[[:blank:]]*\*MFUN\>"
-syn match apdlFunction display "^[[:blank:]]*\*MOPER\>"
-syn match apdlFunction display "^[[:blank:]]*\*MWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*\*TOPER\>"
-syn match apdlFunction display "^[[:blank:]]*\*VABS\>"
-syn match apdlFunction display "^[[:blank:]]*\*VCOL\>"
-syn match apdlFunction display "^[[:blank:]]*\*VCUM\>"
-syn match apdlFunction display "^[[:blank:]]*\*VEDIT\>"
-syn match apdlFunction display "^[[:blank:]]*\*VFACT\>"
-syn match apdlFunction display "^[[:blank:]]*\*VFUN\>"
-syn match apdlFunction display "^[[:blank:]]*\*VITRP\>"
-syn match apdlFunction display "^[[:blank:]]*\*VLEN\>"
-syn match apdlFunction display "^[[:blank:]]*\*VMASK\>"
-syn match apdlFunction display "^[[:blank:]]*\*VOPER\>"
-syn match apdlFunction display "^[[:blank:]]*\*VPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*\*VPUT\>"
-syn match apdlFunction display "^[[:blank:]]*\*VSCFUN\>"
-syn match apdlFunction display "^[[:blank:]]*\*VSTAT\>"
-syn match apdlFunction display "^[[:blank:]]*\*VWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*\*CYCLE\>"
-syn match apdlFunction display "^[[:blank:]]*\*DO\>"
-syn match apdlFunction display "^[[:blank:]]*\*ELSE\>"
-syn match apdlFunction display "^[[:blank:]]*\*ELSEIF\>"
-syn match apdlFunction display "^[[:blank:]]*\*ENDDO\>"
-syn match apdlFunction display "^[[:blank:]]*\*ENDIF\>"
-syn match apdlFunction display "^[[:blank:]]*\*EXIT\>"
-syn match apdlFunction display "^[[:blank:]]*\*GO\>"
-syn match apdlFunction display "^[[:blank:]]*\*IF\>"
-syn match apdlFunction display "^[[:blank:]]*\*REPEAT\>"
-syn match apdlFunction display "^[[:blank:]]*/WAIT\>"
-syn match apdlFunction display "^[[:blank:]]*AFLIST\>"
-syn match apdlFunction display "^[[:blank:]]*CDREAD\>"
-syn match apdlFunction display "^[[:blank:]]*CDWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*CHECK\>"
-syn match apdlFunction display "^[[:blank:]]*IGESOUT\>"
-syn match apdlFunction display "^[[:blank:]]*NUMCMP\>"
-syn match apdlFunction display "^[[:blank:]]*NUMMRG\>"
-syn match apdlFunction display "^[[:blank:]]*NUMOFF\>"
-syn match apdlFunction display "^[[:blank:]]*NUMSTR\>"
-syn match apdlFunction display "^[[:blank:]]*/PREP7\>"
-syn match apdlFunction display "^[[:blank:]]*DOF\>"
-syn match apdlFunction display "^[[:blank:]]*ET\>"
-syn match apdlFunction display "^[[:blank:]]*ETCHG\>"
-syn match apdlFunction display "^[[:blank:]]*ETDELE\>"
-syn match apdlFunction display "^[[:blank:]]*ETLIST\>"
-syn match apdlFunction display "^[[:blank:]]*KEYOPT\>"
-syn match apdlFunction display "^[[:blank:]]*NSVR\>"
-syn match apdlFunction display "^[[:blank:]]*R\>"
-syn match apdlFunction display "^[[:blank:]]*RDELE\>"
-syn match apdlFunction display "^[[:blank:]]*RLIST\>"
-syn match apdlFunction display "^[[:blank:]]*RMODIF\>"
-syn match apdlFunction display "^[[:blank:]]*RMORE\>"
-syn match apdlFunction display "^[[:blank:]]*EMUNIT\>"
-syn match apdlFunction display "^[[:blank:]]*\*EVAL\>"
-syn match apdlFunction display "^[[:blank:]]*\*MOONEY\>"
-syn match apdlFunction display "^[[:blank:]]*MP\>"
-syn match apdlFunction display "^[[:blank:]]*MPAMOD\>"
-syn match apdlFunction display "^[[:blank:]]*MPCHG\>"
-syn match apdlFunction display "^[[:blank:]]*MPCOPY\>"
-syn match apdlFunction display "^[[:blank:]]*MPDATA\>"
-syn match apdlFunction display "^[[:blank:]]*MPDELE\>"
-syn match apdlFunction display "^[[:blank:]]*MPDRES\>"
-syn match apdlFunction display "^[[:blank:]]*/MPLIB\>"
-syn match apdlFunction display "^[[:blank:]]*MPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*MPMOD\>"
-syn match apdlFunction display "^[[:blank:]]*MPUNDO\>"
-syn match apdlFunction display "^[[:blank:]]*MPPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*MPREAD\>"
-syn match apdlFunction display "^[[:blank:]]*MPTEMP\>"
-syn match apdlFunction display "^[[:blank:]]*MPTGEN\>"
-syn match apdlFunction display "^[[:blank:]]*MPTRES\>"
-syn match apdlFunction display "^[[:blank:]]*MPWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*UIMP\>"
-syn match apdlFunction display "^[[:blank:]]*TB\>"
-syn match apdlFunction display "^[[:blank:]]*TBCOPY\>"
-syn match apdlFunction display "^[[:blank:]]*TBDATA\>"
-syn match apdlFunction display "^[[:blank:]]*TBDELE\>"
-syn match apdlFunction display "^[[:blank:]]*TBLIST\>"
-syn match apdlFunction display "^[[:blank:]]*TBMODIF\>"
-syn match apdlFunction display "^[[:blank:]]*TBPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*TBPT\>"
-syn match apdlFunction display "^[[:blank:]]*TBTEMP\>"
-syn match apdlFunction display "^[[:blank:]]*BLC4\>"
-syn match apdlFunction display "^[[:blank:]]*BLC5\>"
-syn match apdlFunction display "^[[:blank:]]*BLOCK\>"
-syn match apdlFunction display "^[[:blank:]]*CON4\>"
-syn match apdlFunction display "^[[:blank:]]*CONE\>"
-syn match apdlFunction display "^[[:blank:]]*CYL4\>"
-syn match apdlFunction display "^[[:blank:]]*CYL5\>"
-syn match apdlFunction display "^[[:blank:]]*CYLIND\>"
-syn match apdlFunction display "^[[:blank:]]*PCIRC\>"
-syn match apdlFunction display "^[[:blank:]]*POLY\>"
-syn match apdlFunction display "^[[:blank:]]*PRI2\>"
-syn match apdlFunction display "^[[:blank:]]*PRISM\>"
-syn match apdlFunction display "^[[:blank:]]*PTXY\>"
-syn match apdlFunction display "^[[:blank:]]*RECTNG\>"
-syn match apdlFunction display "^[[:blank:]]*RPOLY\>"
-syn match apdlFunction display "^[[:blank:]]*RPR4\>"
-syn match apdlFunction display "^[[:blank:]]*RPRISM\>"
-syn match apdlFunction display "^[[:blank:]]*SPH4\>"
-syn match apdlFunction display "^[[:blank:]]*SPH5\>"
-syn match apdlFunction display "^[[:blank:]]*SPHERE\>"
-syn match apdlFunction display "^[[:blank:]]*TORUS\>"
-syn match apdlFunction display "^[[:blank:]]*GSUM\>"
-syn match apdlFunction display "^[[:blank:]]*K\>"
-syn match apdlFunction display "^[[:blank:]]*KBETW\>"
-syn match apdlFunction display "^[[:blank:]]*KCENTER\>"
-syn match apdlFunction display "^[[:blank:]]*KDELE\>"
-syn match apdlFunction display "^[[:blank:]]*KDIST\>"
-syn match apdlFunction display "^[[:blank:]]*KFILL\>"
-syn match apdlFunction display "^[[:blank:]]*KGEN\>"
-syn match apdlFunction display "^[[:blank:]]*KL\>"
-syn match apdlFunction display "^[[:blank:]]*KLIST\>"
-syn match apdlFunction display "^[[:blank:]]*KMODIF\>"
-syn match apdlFunction display "^[[:blank:]]*KMOVE\>"
-syn match apdlFunction display "^[[:blank:]]*KNODE\>"
-syn match apdlFunction display "^[[:blank:]]*KPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*KPSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*KSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*KSUM\>"
-syn match apdlFunction display "^[[:blank:]]*KSYMM\>"
-syn match apdlFunction display "^[[:blank:]]*KTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*SOURCE\>"
-syn match apdlFunction display "^[[:blank:]]*HPTCREATE\>"
-syn match apdlFunction display "^[[:blank:]]*HPTDELETE\>"
-syn match apdlFunction display "^[[:blank:]]*BSPLIN\>"
-syn match apdlFunction display "^[[:blank:]]*CIRCLE\>"
-syn match apdlFunction display "^[[:blank:]]*GSUM\>"
-syn match apdlFunction display "^[[:blank:]]*L\>"
-syn match apdlFunction display "^[[:blank:]]*L2ANG\>"
-syn match apdlFunction display "^[[:blank:]]*L2TAN\>"
-syn match apdlFunction display "^[[:blank:]]*LANG\>"
-syn match apdlFunction display "^[[:blank:]]*LARC\>"
-syn match apdlFunction display "^[[:blank:]]*LAREA\>"
-syn match apdlFunction display "^[[:blank:]]*LCOMB\>"
-syn match apdlFunction display "^[[:blank:]]*LDELE\>"
-syn match apdlFunction display "^[[:blank:]]*LDIV\>"
-syn match apdlFunction display "^[[:blank:]]*LDRAG\>"
-syn match apdlFunction display "^[[:blank:]]*LEXTND\>"
-syn match apdlFunction display "^[[:blank:]]*LFILLT\>"
-syn match apdlFunction display "^[[:blank:]]*LGEN\>"
-syn match apdlFunction display "^[[:blank:]]*LLIST\>"
-syn match apdlFunction display "^[[:blank:]]*LPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*LREVERSE\>"
-syn match apdlFunction display "^[[:blank:]]*LROTAT\>"
-syn match apdlFunction display "^[[:blank:]]*LSSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*LSTR\>"
-syn match apdlFunction display "^[[:blank:]]*LSUM\>"
-syn match apdlFunction display "^[[:blank:]]*LSYMM\>"
-syn match apdlFunction display "^[[:blank:]]*LTAN\>"
-syn match apdlFunction display "^[[:blank:]]*LTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*SPLINE\>"
-syn match apdlFunction display "^[[:blank:]]*SSLN\>"
-syn match apdlFunction display "^[[:blank:]]*A\>"
-syn match apdlFunction display "^[[:blank:]]*AATT\>"
-syn match apdlFunction display "^[[:blank:]]*ADELE\>"
-syn match apdlFunction display "^[[:blank:]]*ADGL\>"
-syn match apdlFunction display "^[[:blank:]]*ADRAG\>"
-syn match apdlFunction display "^[[:blank:]]*AFILLT\>"
-syn match apdlFunction display "^[[:blank:]]*AGEN\>"
-syn match apdlFunction display "^[[:blank:]]*AL\>"
-syn match apdlFunction display "^[[:blank:]]*ALIST\>"
-syn match apdlFunction display "^[[:blank:]]*ANORM\>"
-syn match apdlFunction display "^[[:blank:]]*AOFFST\>"
-syn match apdlFunction display "^[[:blank:]]*APLOT\>"
-syn match apdlFunction display "^[[:blank:]]*AREVERSE\>"
-syn match apdlFunction display "^[[:blank:]]*AROTAT\>"
-syn match apdlFunction display "^[[:blank:]]*ARSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*ARSYM\>"
-syn match apdlFunction display "^[[:blank:]]*ASKIN\>"
-syn match apdlFunction display "^[[:blank:]]*ASUB\>"
-syn match apdlFunction display "^[[:blank:]]*ASUM\>"
-syn match apdlFunction display "^[[:blank:]]*ATRAN\>"
-syn match apdlFunction display "^[[:blank:]]*GSUM\>"
-syn match apdlFunction display "^[[:blank:]]*EXTOPT\>"
-syn match apdlFunction display "^[[:blank:]]*GSUM\>"
-syn match apdlFunction display "^[[:blank:]]*V\>"
-syn match apdlFunction display "^[[:blank:]]*VA\>"
-syn match apdlFunction display "^[[:blank:]]*VDELE\>"
-syn match apdlFunction display "^[[:blank:]]*VDGL\>"
-syn match apdlFunction display "^[[:blank:]]*VDRAG\>"
-syn match apdlFunction display "^[[:blank:]]*VEXT\>"
-syn match apdlFunction display "^[[:blank:]]*VGEN\>"
-syn match apdlFunction display "^[[:blank:]]*VLIST\>"
-syn match apdlFunction display "^[[:blank:]]*VLSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*VOFFST\>"
-syn match apdlFunction display "^[[:blank:]]*VPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*VROTAT\>"
-syn match apdlFunction display "^[[:blank:]]*VSUM\>"
-syn match apdlFunction display "^[[:blank:]]*VSYMM\>"
-syn match apdlFunction display "^[[:blank:]]*VTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*AADD\>"
-syn match apdlFunction display "^[[:blank:]]*AGLUE\>"
-syn match apdlFunction display "^[[:blank:]]*AINA\>"
-syn match apdlFunction display "^[[:blank:]]*AINP\>"
-syn match apdlFunction display "^[[:blank:]]*AINV\>"
-syn match apdlFunction display "^[[:blank:]]*AOVLAP\>"
-syn match apdlFunction display "^[[:blank:]]*APTN\>"
-syn match apdlFunction display "^[[:blank:]]*ASBA\>"
-syn match apdlFunction display "^[[:blank:]]*ASBL\>"
-syn match apdlFunction display "^[[:blank:]]*ASBV\>"
-syn match apdlFunction display "^[[:blank:]]*ASBW\>"
-syn match apdlFunction display "^[[:blank:]]*BOPTN\>"
-syn match apdlFunction display "^[[:blank:]]*BTOL\>"
-syn match apdlFunction display "^[[:blank:]]*LCSL\>"
-syn match apdlFunction display "^[[:blank:]]*LGLUE\>"
-syn match apdlFunction display "^[[:blank:]]*LINA\>"
-syn match apdlFunction display "^[[:blank:]]*LINL\>"
-syn match apdlFunction display "^[[:blank:]]*LINP\>"
-syn match apdlFunction display "^[[:blank:]]*LINV\>"
-syn match apdlFunction display "^[[:blank:]]*LOVLAP\>"
-syn match apdlFunction display "^[[:blank:]]*LPTN\>"
-syn match apdlFunction display "^[[:blank:]]*LSBA\>"
-syn match apdlFunction display "^[[:blank:]]*LSBL\>"
-syn match apdlFunction display "^[[:blank:]]*LSBV\>"
-syn match apdlFunction display "^[[:blank:]]*LSBW\>"
-syn match apdlFunction display "^[[:blank:]]*VADD\>"
-syn match apdlFunction display "^[[:blank:]]*VGLUE\>"
-syn match apdlFunction display "^[[:blank:]]*VINP\>"
-syn match apdlFunction display "^[[:blank:]]*VINV\>"
-syn match apdlFunction display "^[[:blank:]]*VOVLAP\>"
-syn match apdlFunction display "^[[:blank:]]*VPTN\>"
-syn match apdlFunction display "^[[:blank:]]*VSBA\>"
-syn match apdlFunction display "^[[:blank:]]*VSBV\>"
-syn match apdlFunction display "^[[:blank:]]*VSBW\>"
-syn match apdlFunction display "^[[:blank:]]*ACCAT\>"
-syn match apdlFunction display "^[[:blank:]]*ACLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*AESIZE\>"
-syn match apdlFunction display "^[[:blank:]]*AMAP\>"
-syn match apdlFunction display "^[[:blank:]]*AMESH\>"
-syn match apdlFunction display "^[[:blank:]]*AREFINE\>"
-syn match apdlFunction display "^[[:blank:]]*CHKMSH\>"
-syn match apdlFunction display "^[[:blank:]]*CLRMSHLN\>"
-syn match apdlFunction display "^[[:blank:]]*CPCYC\>"
-syn match apdlFunction display "^[[:blank:]]*DESIZE\>"
-syn match apdlFunction display "^[[:blank:]]*EORIENT\>"
-syn match apdlFunction display "^[[:blank:]]*EREFINE\>"
-syn match apdlFunction display "^[[:blank:]]*ESIZE\>"
-syn match apdlFunction display "^[[:blank:]]*ESYS\>"
-syn match apdlFunction display "^[[:blank:]]*FVMESH\>"
-syn match apdlFunction display "^[[:blank:]]*KATT\>"
-syn match apdlFunction display "^[[:blank:]]*KCLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*KESIZE\>"
-syn match apdlFunction display "^[[:blank:]]*KMESH\>"
-syn match apdlFunction display "^[[:blank:]]*KREFINE\>"
-syn match apdlFunction display "^[[:blank:]]*KSCON\>"
-syn match apdlFunction display "^[[:blank:]]*LATT\>"
-syn match apdlFunction display "^[[:blank:]]*LCCAT\>"
-syn match apdlFunction display "^[[:blank:]]*LCLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*LESIZE\>"
-syn match apdlFunction display "^[[:blank:]]*LMESH\>"
-syn match apdlFunction display "^[[:blank:]]*LREFINE\>"
-syn match apdlFunction display "^[[:blank:]]*MAT\>"
-syn match apdlFunction display "^[[:blank:]]*MCHECK\>"
-syn match apdlFunction display "^[[:blank:]]*MODMSH\>"
-syn match apdlFunction display "^[[:blank:]]*MOPT\>"
-syn match apdlFunction display "^[[:blank:]]*MSHAPE\>"
-syn match apdlFunction display "^[[:blank:]]*MSHCOPY\>"
-syn match apdlFunction display "^[[:blank:]]*MSHKEY\>"
-syn match apdlFunction display "^[[:blank:]]*MSHMID\>"
-syn match apdlFunction display "^[[:blank:]]*MSHPATTERN\>"
-syn match apdlFunction display "^[[:blank:]]*NREFINE\>"
-syn match apdlFunction display "^[[:blank:]]*PSMESH\>"
-syn match apdlFunction display "^[[:blank:]]*PRETS179\>"
-syn match apdlFunction display "^[[:blank:]]*REAL\>"
-syn match apdlFunction display "^[[:blank:]]*RTHICK\>"
-syn match apdlFunction display "^[[:blank:]]*SMRTSIZE\>"
-syn match apdlFunction display "^[[:blank:]]*TCHG\>"
-syn match apdlFunction display "^[[:blank:]]*TIMP\>"
-syn match apdlFunction display "^[[:blank:]]*TYPE\>"
-syn match apdlFunction display "^[[:blank:]]*VATT\>"
-syn match apdlFunction display "^[[:blank:]]*VCLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*VIMP\>"
-syn match apdlFunction display "^[[:blank:]]*VMESH\>"
-syn match apdlFunction display "^[[:blank:]]*VSWEEP\>"
-syn match apdlFunction display "^[[:blank:]]*CENTER\>"
-syn match apdlFunction display "^[[:blank:]]*FILL\>"
-syn match apdlFunction display "^[[:blank:]]*MOVE\>"
-syn match apdlFunction display "^[[:blank:]]*N\>"
-syn match apdlFunction display "^[[:blank:]]*NANG\>"
-syn match apdlFunction display "^[[:blank:]]*NDELE\>"
-syn match apdlFunction display "^[[:blank:]]*NDIST\>"
-syn match apdlFunction display "^[[:blank:]]*NGEN\>"
-syn match apdlFunction display "^[[:blank:]]*NKPT\>"
-syn match apdlFunction display "^[[:blank:]]*NLIST\>"
-syn match apdlFunction display "^[[:blank:]]*NMODIF\>"
-syn match apdlFunction display "^[[:blank:]]*NPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*NREAD\>"
-syn match apdlFunction display "^[[:blank:]]*NROTAT\>"
-syn match apdlFunction display "^[[:blank:]]*NRRANG\>"
-syn match apdlFunction display "^[[:blank:]]*NSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*NSMOOTH\>"
-syn match apdlFunction display "^[[:blank:]]*NSYM\>"
-syn match apdlFunction display "^[[:blank:]]*NWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*QUAD\>"
-syn match apdlFunction display "^[[:blank:]]*SOURCE\>"
-syn match apdlFunction display "^[[:blank:]]*TRANSFER\>"
-syn match apdlFunction display "^[[:blank:]]*AFSURF\>"
-syn match apdlFunction display "^[[:blank:]]*E\>"
-syn match apdlFunction display "^[[:blank:]]*EDELE\>"
-syn match apdlFunction display "^[[:blank:]]*EGEN\>"
-syn match apdlFunction display "^[[:blank:]]*EINTF\>"
-syn match apdlFunction display "^[[:blank:]]*ELIST\>"
-syn match apdlFunction display "^[[:blank:]]*EMID\>"
-syn match apdlFunction display "^[[:blank:]]*EMODIF\>"
-syn match apdlFunction display "^[[:blank:]]*EMORE\>"
-syn match apdlFunction display "^[[:blank:]]*EMTGEN\>"
-syn match apdlFunction display "^[[:blank:]]*EN\>"
-syn match apdlFunction display "^[[:blank:]]*ENGEN\>"
-syn match apdlFunction display "^[[:blank:]]*ENORM\>"
-syn match apdlFunction display "^[[:blank:]]*ENSYM\>"
-syn match apdlFunction display "^[[:blank:]]*EORIENT\>"
-syn match apdlFunction display "^[[:blank:]]*EPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*EREAD\>"
-syn match apdlFunction display "^[[:blank:]]*ERRANG\>"
-syn match apdlFunction display "^[[:blank:]]*ESURF\>"
-syn match apdlFunction display "^[[:blank:]]*ESYM\>"
-syn match apdlFunction display "^[[:blank:]]*ESYS\>"
-syn match apdlFunction display "^[[:blank:]]*EWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*GCGEN\>"
-syn match apdlFunction display "^[[:blank:]]*LAYLIST\>"
-syn match apdlFunction display "^[[:blank:]]*LAYPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*LFSURF\>"
-syn match apdlFunction display "^[[:blank:]]*MAT\>"
-syn match apdlFunction display "^[[:blank:]]*NDSURF\>"
-syn match apdlFunction display "^[[:blank:]]*REAL\>"
-syn match apdlFunction display "^[[:blank:]]*TSHAP\>"
-syn match apdlFunction display "^[[:blank:]]*TYPE\>"
-syn match apdlFunction display "^[[:blank:]]*UPGEOM\>"
-syn match apdlFunction display "^[[:blank:]]*SE\>"
-syn match apdlFunction display "^[[:blank:]]*SEDLIST\>"
-syn match apdlFunction display "^[[:blank:]]*SELIST\>"
-syn match apdlFunction display "^[[:blank:]]*SESYMM\>"
-syn match apdlFunction display "^[[:blank:]]*SETRAN\>"
-syn match apdlFunction display "^[[:blank:]]*BELLOW\>"
-syn match apdlFunction display "^[[:blank:]]*BEND\>"
-syn match apdlFunction display "^[[:blank:]]*BRANCH\>"
-syn match apdlFunction display "^[[:blank:]]*FLANGE\>"
-syn match apdlFunction display "^[[:blank:]]*MITER\>"
-syn match apdlFunction display "^[[:blank:]]*PCORRO\>"
-syn match apdlFunction display "^[[:blank:]]*PDRAG\>"
-syn match apdlFunction display "^[[:blank:]]*PFLUID\>"
-syn match apdlFunction display "^[[:blank:]]*PGAP\>"
-syn match apdlFunction display "^[[:blank:]]*PINSUL\>"
-syn match apdlFunction display "^[[:blank:]]*POPT\>"
-syn match apdlFunction display "^[[:blank:]]*PPRES\>"
-syn match apdlFunction display "^[[:blank:]]*PSPEC\>"
-syn match apdlFunction display "^[[:blank:]]*PSPRNG\>"
-syn match apdlFunction display "^[[:blank:]]*PTEMP\>"
-syn match apdlFunction display "^[[:blank:]]*PUNIT\>"
-syn match apdlFunction display "^[[:blank:]]*REDUCE\>"
-syn match apdlFunction display "^[[:blank:]]*RUN\>"
-syn match apdlFunction display "^[[:blank:]]*TEE\>"
-syn match apdlFunction display "^[[:blank:]]*VALVE\>"
-syn match apdlFunction display "^[[:blank:]]*DIG\>"
-syn match apdlFunction display "^[[:blank:]]*DMOVE\>"
-syn match apdlFunction display "^[[:blank:]]*DSET\>"
-syn match apdlFunction display "^[[:blank:]]*DSURF\>"
-syn match apdlFunction display "^[[:blank:]]*CP\>"
-syn match apdlFunction display "^[[:blank:]]*CPDELE\>"
-syn match apdlFunction display "^[[:blank:]]*CPINTF\>"
-syn match apdlFunction display "^[[:blank:]]*CPLGEN\>"
-syn match apdlFunction display "^[[:blank:]]*CPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*CPNGEN\>"
-syn match apdlFunction display "^[[:blank:]]*CPSGEN\>"
-syn match apdlFunction display "^[[:blank:]]*CE\>"
-syn match apdlFunction display "^[[:blank:]]*CECYC\>"
-syn match apdlFunction display "^[[:blank:]]*CEDELE\>"
-syn match apdlFunction display "^[[:blank:]]*CEINTF\>"
-syn match apdlFunction display "^[[:blank:]]*CELIST\>"
-syn match apdlFunction display "^[[:blank:]]*CERIG\>"
-syn match apdlFunction display "^[[:blank:]]*CESGEN\>"
-syn match apdlFunction display "^[[:blank:]]*RBE3\>"
-syn match apdlFunction display "^[[:blank:]]*NOORDER\>"
-syn match apdlFunction display "^[[:blank:]]*WAVES\>"
-syn match apdlFunction display "^[[:blank:]]*WERASE\>"
-syn match apdlFunction display "^[[:blank:]]*WFRONT\>"
-syn match apdlFunction display "^[[:blank:]]*WMORE\>"
-syn match apdlFunction display "^[[:blank:]]*WSORT\>"
-syn match apdlFunction display "^[[:blank:]]*WSTART\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA1\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA2\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA3\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA4\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA4A\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA5\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA6\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA7\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA8\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA9\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA10\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA11\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA12\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA13\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA14\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA15\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA16\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA17\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA18\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA19\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA20\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA20A\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA21\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA22\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA23\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA24\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA24A\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA24B\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA24C\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA24D\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA25\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA26\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA34\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA27\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA28\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA29\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA30\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA31\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA32\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA33\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA35\>"
-syn match apdlFunction display "^[[:blank:]]*FLDATA36\>"
-syn match apdlFunction display "^[[:blank:]]*ICVFRC\>"
-syn match apdlFunction display "^[[:blank:]]*PLVFRC\>"
-syn match apdlFunction display "^[[:blank:]]*MSADV\>"
-syn match apdlFunction display "^[[:blank:]]*MSCAP\>"
-syn match apdlFunction display "^[[:blank:]]*MSDATA\>"
-syn match apdlFunction display "^[[:blank:]]*MSMETH\>"
-syn match apdlFunction display "^[[:blank:]]*MSMIR\>"
-syn match apdlFunction display "^[[:blank:]]*MSNOMF\>"
-syn match apdlFunction display "^[[:blank:]]*MSPROP\>"
-syn match apdlFunction display "^[[:blank:]]*MSQUAD\>"
-syn match apdlFunction display "^[[:blank:]]*MSRELAX\>"
-syn match apdlFunction display "^[[:blank:]]*MSSOLU\>"
-syn match apdlFunction display "^[[:blank:]]*MSSPEC\>"
-syn match apdlFunction display "^[[:blank:]]*MSTERM\>"
-syn match apdlFunction display "^[[:blank:]]*MSVARY\>"
-syn match apdlFunction display "^[[:blank:]]*CYCGEN\>"
-syn match apdlFunction display "^[[:blank:]]*EMSYM\>"
-syn match apdlFunction display "^[[:blank:]]*PERBC2D\>"
-syn match apdlFunction display "^[[:blank:]]*PHYSICS\>"
-syn match apdlFunction display "^[[:blank:]]*RACE\>"
-syn match apdlFunction display "^[[:blank:]]*AREAS\>"
-syn match apdlFunction display "^[[:blank:]]*BOOL\>"
-syn match apdlFunction display "^[[:blank:]]*CEQN\>"
-syn match apdlFunction display "^[[:blank:]]*COUPLE\>"
-syn match apdlFunction display "^[[:blank:]]*DIGIT\>"
-syn match apdlFunction display "^[[:blank:]]*ELEM\>"
-syn match apdlFunction display "^[[:blank:]]*ETYPE\>"
-syn match apdlFunction display "^[[:blank:]]*FATIGUE\>"
-syn match apdlFunction display "^[[:blank:]]*FEBODY\>"
-syn match apdlFunction display "^[[:blank:]]*FECONS\>"
-syn match apdlFunction display "^[[:blank:]]*FEFOR\>"
-syn match apdlFunction display "^[[:blank:]]*FESURF\>"
-syn match apdlFunction display "^[[:blank:]]*FLOTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*GEOMETRY\>"
-syn match apdlFunction display "^[[:blank:]]*KEYPTS\>"
-syn match apdlFunction display "^[[:blank:]]*LINE\>"
-syn match apdlFunction display "^[[:blank:]]*MATER\>"
-syn match apdlFunction display "^[[:blank:]]*MESHING\>"
-syn match apdlFunction display "^[[:blank:]]*NODES\>"
-syn match apdlFunction display "^[[:blank:]]*PIPE\>"
-syn match apdlFunction display "^[[:blank:]]*PMETH\>"
-syn match apdlFunction display "^[[:blank:]]*PRIM\>"
-syn match apdlFunction display "^[[:blank:]]*RCON\>"
-syn match apdlFunction display "^[[:blank:]]*REORDER\>"
-syn match apdlFunction display "^[[:blank:]]*SELM\>"
-syn match apdlFunction display "^[[:blank:]]*TBLE\>"
-syn match apdlFunction display "^[[:blank:]]*VOLUMES\>"
-syn match apdlFunction display "^[[:blank:]]*EDASMP\>"
-syn match apdlFunction display "^[[:blank:]]*EDBOUND\>"
-syn match apdlFunction display "^[[:blank:]]*EDBX\>"
-syn match apdlFunction display "^[[:blank:]]*EDCGEN\>"
-syn match apdlFunction display "^[[:blank:]]*EDCLIST\>"
-syn match apdlFunction display "^[[:blank:]]*EDCONTACT\>"
-syn match apdlFunction display "^[[:blank:]]*EDCRB\>"
-syn match apdlFunction display "^[[:blank:]]*EDCURVE\>"
-syn match apdlFunction display "^[[:blank:]]*EDDC\>"
-syn match apdlFunction display "^[[:blank:]]*EDIPART\>"
-syn match apdlFunction display "^[[:blank:]]*EDLCS\>"
-syn match apdlFunction display "^[[:blank:]]*EDMP\>"
-syn match apdlFunction display "^[[:blank:]]*EDNB\>"
-syn match apdlFunction display "^[[:blank:]]*EDNDTSD\>"
-syn match apdlFunction display "^[[:blank:]]*EDNROT\>"
-syn match apdlFunction display "^[[:blank:]]*EDPART\>"
-syn match apdlFunction display "^[[:blank:]]*EDPC\>"
-syn match apdlFunction display "^[[:blank:]]*EDSP\>"
-syn match apdlFunction display "^[[:blank:]]*EDWELD\>"
-syn match apdlFunction display "^[[:blank:]]*ALPFILL\>"
-syn match apdlFunction display "^[[:blank:]]*ARCOLLAPSE\>"
-syn match apdlFunction display "^[[:blank:]]*ARDETACH\>"
-syn match apdlFunction display "^[[:blank:]]*ARFILL\>"
-syn match apdlFunction display "^[[:blank:]]*ARMERGE\>"
-syn match apdlFunction display "^[[:blank:]]*ARSPLIT\>"
-syn match apdlFunction display "^[[:blank:]]*GAPFINISH\>"
-syn match apdlFunction display "^[[:blank:]]*GAPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*GAPMERGE\>"
-syn match apdlFunction display "^[[:blank:]]*GAPOPT\>"
-syn match apdlFunction display "^[[:blank:]]*GAPPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*LNCOLLAPSE\>"
-syn match apdlFunction display "^[[:blank:]]*LNDETACH\>"
-syn match apdlFunction display "^[[:blank:]]*LNFILL\>"
-syn match apdlFunction display "^[[:blank:]]*LNMERGE\>"
-syn match apdlFunction display "^[[:blank:]]*LNSPLIT\>"
-syn match apdlFunction display "^[[:blank:]]*SARPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*SLPPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*SLSPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*VCVFILL\>"
-syn match apdlFunction display "^[[:blank:]]*BEAM188\>"
-syn match apdlFunction display "^[[:blank:]]*BEAM189\>"
-syn match apdlFunction display "^[[:blank:]]*SDELETE\>"
-syn match apdlFunction display "^[[:blank:]]*SECDATA\>"
-syn match apdlFunction display "^[[:blank:]]*SECREAD\>"
-syn match apdlFunction display "^[[:blank:]]*SECNUM\>"
-syn match apdlFunction display "^[[:blank:]]*SECOFFSET\>"
-syn match apdlFunction display "^[[:blank:]]*SECPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*SECREAD\>"
-syn match apdlFunction display "^[[:blank:]]*SECTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*SECWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*SLIST\>"
-syn match apdlFunction display "^[[:blank:]]*DAMORPH\>"
-syn match apdlFunction display "^[[:blank:]]*DEMORPH\>"
-syn match apdlFunction display "^[[:blank:]]*DVMORPH\>"
-syn match apdlFunction display "^[[:blank:]]*TZAMESH\>"
-syn match apdlFunction display "^[[:blank:]]*TZDELE\>"
-syn match apdlFunction display "^[[:blank:]]*TZEGEN\>"
-syn match apdlFunction display "^[[:blank:]]*PMLOPT\>"
-syn match apdlFunction display "^[[:blank:]]*ADAPT\>"
-syn match apdlFunction display "^[[:blank:]]*ANTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*CHECK\>"
-syn match apdlFunction display "^[[:blank:]]*CMATRIX\>"
-syn match apdlFunction display "^[[:blank:]]*CUTCONTROL\>"
-syn match apdlFunction display "^[[:blank:]]*DDSOPT\>"
-syn match apdlFunction display "^[[:blank:]]*EQSLV\>"
-syn match apdlFunction display "^[[:blank:]]*ERESX\>"
-syn match apdlFunction display "^[[:blank:]]*ESSOLV\>"
-syn match apdlFunction display "^[[:blank:]]*EXPASS\>"
-syn match apdlFunction display "^[[:blank:]]*GAUGE\>"
-syn match apdlFunction display "^[[:blank:]]*HFEIGOPT\>"
-syn match apdlFunction display "^[[:blank:]]*HFSCAT\>"
-syn match apdlFunction display "^[[:blank:]]*HFSWEEP\>"
-syn match apdlFunction display "^[[:blank:]]*LMATRIX\>"
-syn match apdlFunction display "^[[:blank:]]*LUMPM\>"
-syn match apdlFunction display "^[[:blank:]]*MONITOR\>"
-syn match apdlFunction display "^[[:blank:]]*MSAVE\>"
-syn match apdlFunction display "^[[:blank:]]*OPNCONTROL\>"
-syn match apdlFunction display "^[[:blank:]]*PRECISION\>"
-syn match apdlFunction display "^[[:blank:]]*PSOLVE\>"
-syn match apdlFunction display "^[[:blank:]]*RATE\>"
-syn match apdlFunction display "^[[:blank:]]*SEEXP\>"
-syn match apdlFunction display "^[[:blank:]]*SEOPT\>"
-syn match apdlFunction display "^[[:blank:]]*SOLCONTROL\>"
-syn match apdlFunction display "^[[:blank:]]*/SOLU\>"
-syn match apdlFunction display "^[[:blank:]]*SOLVE\>"
-syn match apdlFunction display "^[[:blank:]]*TOFFST\>"
-syn match apdlFunction display "^[[:blank:]]*PCONV\>"
-syn match apdlFunction display "^[[:blank:]]*PEXCLUDE\>"
-syn match apdlFunction display "^[[:blank:]]*PINCLUDE\>"
-syn match apdlFunction display "^[[:blank:]]*/PMETH\>"
-syn match apdlFunction display "^[[:blank:]]*PMOPTS\>"
-syn match apdlFunction display "^[[:blank:]]*PPRANGE\>"
-syn match apdlFunction display "^[[:blank:]]*ARCLEN\>"
-syn match apdlFunction display "^[[:blank:]]*ARCTRM\>"
-syn match apdlFunction display "^[[:blank:]]*BUCOPT\>"
-syn match apdlFunction display "^[[:blank:]]*CNVTOL\>"
-syn match apdlFunction display "^[[:blank:]]*CRPLIM\>"
-syn match apdlFunction display "^[[:blank:]]*/GST\>"
-syn match apdlFunction display "^[[:blank:]]*LNSRCH\>"
-syn match apdlFunction display "^[[:blank:]]*MXPAND\>"
-syn match apdlFunction display "^[[:blank:]]*NCNV\>"
-syn match apdlFunction display "^[[:blank:]]*NEQIT\>"
-syn match apdlFunction display "^[[:blank:]]*NLGEOM\>"
-syn match apdlFunction display "^[[:blank:]]*NROPT\>"
-syn match apdlFunction display "^[[:blank:]]*PRED\>"
-syn match apdlFunction display "^[[:blank:]]*PSTRES\>"
-syn match apdlFunction display "^[[:blank:]]*SSTIF\>"
-syn match apdlFunction display "^[[:blank:]]*SUBOPT\>"
-syn match apdlFunction display "^[[:blank:]]*ALPHAD\>"
-syn match apdlFunction display "^[[:blank:]]*BETAD\>"
-syn match apdlFunction display "^[[:blank:]]*CYCSOL\>"
-syn match apdlFunction display "^[[:blank:]]*DMPRAT\>"
-syn match apdlFunction display "^[[:blank:]]*HARFRQ\>"
-syn match apdlFunction display "^[[:blank:]]*HREXP\>"
-syn match apdlFunction display "^[[:blank:]]*HROPT\>"
-syn match apdlFunction display "^[[:blank:]]*HROUT\>"
-syn match apdlFunction display "^[[:blank:]]*LVSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*MDAMP\>"
-syn match apdlFunction display "^[[:blank:]]*MODOPT\>"
-syn match apdlFunction display "^[[:blank:]]*MXPAND\>"
-syn match apdlFunction display "^[[:blank:]]*RIGID\>"
-syn match apdlFunction display "^[[:blank:]]*SUBOPT\>"
-syn match apdlFunction display "^[[:blank:]]*TIMINT\>"
-syn match apdlFunction display "^[[:blank:]]*TINTP\>"
-syn match apdlFunction display "^[[:blank:]]*TRNOPT\>"
-syn match apdlFunction display "^[[:blank:]]*ADDAM\>"
-syn match apdlFunction display "^[[:blank:]]*COVAL\>"
-syn match apdlFunction display "^[[:blank:]]*CQC\>"
-syn match apdlFunction display "^[[:blank:]]*DSUM\>"
-syn match apdlFunction display "^[[:blank:]]*FREQ\>"
-syn match apdlFunction display "^[[:blank:]]*GRP\>"
-syn match apdlFunction display "^[[:blank:]]*NRLSUM\>"
-syn match apdlFunction display "^[[:blank:]]*PFACT\>"
-syn match apdlFunction display "^[[:blank:]]*PSDCOM\>"
-syn match apdlFunction display "^[[:blank:]]*PSDFRQ\>"
-syn match apdlFunction display "^[[:blank:]]*PSDGRAPH\>"
-syn match apdlFunction display "^[[:blank:]]*PSDRES\>"
-syn match apdlFunction display "^[[:blank:]]*PSDSPL\>"
-syn match apdlFunction display "^[[:blank:]]*PSDUNIT\>"
-syn match apdlFunction display "^[[:blank:]]*PSDVAL\>"
-syn match apdlFunction display "^[[:blank:]]*PSDWAV\>"
-syn match apdlFunction display "^[[:blank:]]*QDVAL\>"
-syn match apdlFunction display "^[[:blank:]]*ROCK\>"
-syn match apdlFunction display "^[[:blank:]]*SED\>"
-syn match apdlFunction display "^[[:blank:]]*SPOPT\>"
-syn match apdlFunction display "^[[:blank:]]*SRSS\>"
-syn match apdlFunction display "^[[:blank:]]*SV\>"
-syn match apdlFunction display "^[[:blank:]]*SVTYP\>"
-syn match apdlFunction display "^[[:blank:]]*VDDAM\>"
-syn match apdlFunction display "^[[:blank:]]*AUTOTS\>"
-syn match apdlFunction display "^[[:blank:]]*CECMOD\>"
-syn match apdlFunction display "^[[:blank:]]*DELTIM\>"
-syn match apdlFunction display "^[[:blank:]]*EXPSOL\>"
-syn match apdlFunction display "^[[:blank:]]*HMAGSOLV\>"
-syn match apdlFunction display "^[[:blank:]]*KBC\>"
-syn match apdlFunction display "^[[:blank:]]*KUSE\>"
-syn match apdlFunction display "^[[:blank:]]*MAGOPT\>"
-syn match apdlFunction display "^[[:blank:]]*MAGSOLV\>"
-syn match apdlFunction display "^[[:blank:]]*MODE\>"
-syn match apdlFunction display "^[[:blank:]]*NSUBST\>"
-syn match apdlFunction display "^[[:blank:]]*NUMEXP\>"
-syn match apdlFunction display "^[[:blank:]]*TIME\>"
-syn match apdlFunction display "^[[:blank:]]*TREF\>"
-syn match apdlFunction display "^[[:blank:]]*TSRES\>"
-syn match apdlFunction display "^[[:blank:]]*UPCOORD\>"
-syn match apdlFunction display "^[[:blank:]]*USRCAL\>"
-syn match apdlFunction display "^[[:blank:]]*DA\>"
-syn match apdlFunction display "^[[:blank:]]*DADELE\>"
-syn match apdlFunction display "^[[:blank:]]*DALIST\>"
-syn match apdlFunction display "^[[:blank:]]*DK\>"
-syn match apdlFunction display "^[[:blank:]]*DKDELE\>"
-syn match apdlFunction display "^[[:blank:]]*DKLIST\>"
-syn match apdlFunction display "^[[:blank:]]*DL\>"
-syn match apdlFunction display "^[[:blank:]]*DLDELE\>"
-syn match apdlFunction display "^[[:blank:]]*DLLIST\>"
-syn match apdlFunction display "^[[:blank:]]*DTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*FK\>"
-syn match apdlFunction display "^[[:blank:]]*FKDELE\>"
-syn match apdlFunction display "^[[:blank:]]*FKLIST\>"
-syn match apdlFunction display "^[[:blank:]]*FTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*SFA\>"
-syn match apdlFunction display "^[[:blank:]]*SFADELE\>"
-syn match apdlFunction display "^[[:blank:]]*SFALIST\>"
-syn match apdlFunction display "^[[:blank:]]*SFL\>"
-syn match apdlFunction display "^[[:blank:]]*SFLDELE\>"
-syn match apdlFunction display "^[[:blank:]]*SFLLIST\>"
-syn match apdlFunction display "^[[:blank:]]*SFTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*BFA\>"
-syn match apdlFunction display "^[[:blank:]]*BFADELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFALIST\>"
-syn match apdlFunction display "^[[:blank:]]*BFK\>"
-syn match apdlFunction display "^[[:blank:]]*BFKDELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFKLIST\>"
-syn match apdlFunction display "^[[:blank:]]*BFL\>"
-syn match apdlFunction display "^[[:blank:]]*BFLDELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFLLIST\>"
-syn match apdlFunction display "^[[:blank:]]*BFTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*BFV\>"
-syn match apdlFunction display "^[[:blank:]]*BFVDELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFVLIST\>"
-syn match apdlFunction display "^[[:blank:]]*ACEL\>"
-syn match apdlFunction display "^[[:blank:]]*CGLOC\>"
-syn match apdlFunction display "^[[:blank:]]*CGOMGA\>"
-syn match apdlFunction display "^[[:blank:]]*DCGOMG\>"
-syn match apdlFunction display "^[[:blank:]]*DOMEGA\>"
-syn match apdlFunction display "^[[:blank:]]*IRLF\>"
-syn match apdlFunction display "^[[:blank:]]*OMEGA\>"
-syn match apdlFunction display "^[[:blank:]]*BIOT\>"
-syn match apdlFunction display "^[[:blank:]]*FMAGBC\>"
-syn match apdlFunction display "^[[:blank:]]*HFPORT\>"
-syn match apdlFunction display "^[[:blank:]]*IC\>"
-syn match apdlFunction display "^[[:blank:]]*ICDELE\>"
-syn match apdlFunction display "^[[:blank:]]*ICE\>"
-syn match apdlFunction display "^[[:blank:]]*ICEDELE\>"
-syn match apdlFunction display "^[[:blank:]]*ICELIST\>"
-syn match apdlFunction display "^[[:blank:]]*ICLIST\>"
-syn match apdlFunction display "^[[:blank:]]*ISFILE\>"
-syn match apdlFunction display "^[[:blank:]]*MPCHG\>"
-syn match apdlFunction display "^[[:blank:]]*OUTPR\>"
-syn match apdlFunction display "^[[:blank:]]*OUTRES\>"
-syn match apdlFunction display "^[[:blank:]]*PLWAVE\>"
-syn match apdlFunction display "^[[:blank:]]*RESCONTROL\>"
-syn match apdlFunction display "^[[:blank:]]*SBCLIST\>"
-syn match apdlFunction display "^[[:blank:]]*SBCTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*LSCLEAR\>"
-syn match apdlFunction display "^[[:blank:]]*LSDELE\>"
-syn match apdlFunction display "^[[:blank:]]*LSREAD\>"
-syn match apdlFunction display "^[[:blank:]]*LSSOLVE\>"
-syn match apdlFunction display "^[[:blank:]]*LSWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*M\>"
-syn match apdlFunction display "^[[:blank:]]*MDELE\>"
-syn match apdlFunction display "^[[:blank:]]*MGEN\>"
-syn match apdlFunction display "^[[:blank:]]*MLIST\>"
-syn match apdlFunction display "^[[:blank:]]*TOTAL\>"
-syn match apdlFunction display "^[[:blank:]]*GP\>"
-syn match apdlFunction display "^[[:blank:]]*GPDELE\>"
-syn match apdlFunction display "^[[:blank:]]*GPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*EALIVE\>"
-syn match apdlFunction display "^[[:blank:]]*EKILL\>"
-syn match apdlFunction display "^[[:blank:]]*ESTIF\>"
-syn match apdlFunction display "^[[:blank:]]*D\>"
-syn match apdlFunction display "^[[:blank:]]*DCUM\>"
-syn match apdlFunction display "^[[:blank:]]*DDELE\>"
-syn match apdlFunction display "^[[:blank:]]*DLIST\>"
-syn match apdlFunction display "^[[:blank:]]*DSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*DSYM\>"
-syn match apdlFunction display "^[[:blank:]]*LDREAD\>"
-syn match apdlFunction display "^[[:blank:]]*F\>"
-syn match apdlFunction display "^[[:blank:]]*FCUM\>"
-syn match apdlFunction display "^[[:blank:]]*FDELE\>"
-syn match apdlFunction display "^[[:blank:]]*FLIST\>"
-syn match apdlFunction display "^[[:blank:]]*FSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*SF\>"
-syn match apdlFunction display "^[[:blank:]]*SFBEAM\>"
-syn match apdlFunction display "^[[:blank:]]*SFCUM\>"
-syn match apdlFunction display "^[[:blank:]]*SFDELE\>"
-syn match apdlFunction display "^[[:blank:]]*SFE\>"
-syn match apdlFunction display "^[[:blank:]]*SFEDELE\>"
-syn match apdlFunction display "^[[:blank:]]*SFELIST\>"
-syn match apdlFunction display "^[[:blank:]]*SFFUN\>"
-syn match apdlFunction display "^[[:blank:]]*SFGRAD\>"
-syn match apdlFunction display "^[[:blank:]]*SFLIST\>"
-syn match apdlFunction display "^[[:blank:]]*SFSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*BF\>"
-syn match apdlFunction display "^[[:blank:]]*BFCUM\>"
-syn match apdlFunction display "^[[:blank:]]*BFDELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFE\>"
-syn match apdlFunction display "^[[:blank:]]*BFECUM\>"
-syn match apdlFunction display "^[[:blank:]]*BFEDELE\>"
-syn match apdlFunction display "^[[:blank:]]*BFELIST\>"
-syn match apdlFunction display "^[[:blank:]]*BFESCAL\>"
-syn match apdlFunction display "^[[:blank:]]*BFLIST\>"
-syn match apdlFunction display "^[[:blank:]]*BFSCALE\>"
-syn match apdlFunction display "^[[:blank:]]*BFUNIF\>"
-syn match apdlFunction display "^[[:blank:]]*LDREAD\>"
-syn match apdlFunction display "^[[:blank:]]*RIMPORT\>"
-syn match apdlFunction display "^[[:blank:]]*TUNIF\>"
-syn match apdlFunction display "^[[:blank:]]*STAT\>"
-syn match apdlFunction display "^[[:blank:]]*ATYPE\>"
-syn match apdlFunction display "^[[:blank:]]*BIOOPT\>"
-syn match apdlFunction display "^[[:blank:]]*DEACT\>"
-syn match apdlFunction display "^[[:blank:]]*DYNOPT\>"
-syn match apdlFunction display "^[[:blank:]]*GAP\>"
-syn match apdlFunction display "^[[:blank:]]*GENOPT\>"
-syn match apdlFunction display "^[[:blank:]]*INRTIA\>"
-syn match apdlFunction display "^[[:blank:]]*LSOPER\>"
-syn match apdlFunction display "^[[:blank:]]*MASTER\>"
-syn match apdlFunction display "^[[:blank:]]*NLOPT\>"
-syn match apdlFunction display "^[[:blank:]]*OUTOPT\>"
-syn match apdlFunction display "^[[:blank:]]*SMBODY\>"
-syn match apdlFunction display "^[[:blank:]]*SMCONS\>"
-syn match apdlFunction display "^[[:blank:]]*SMFOR\>"
-syn match apdlFunction display "^[[:blank:]]*SMSURF\>"
-syn match apdlFunction display "^[[:blank:]]*SOLUOPT\>"
-syn match apdlFunction display "^[[:blank:]]*SPTOPT\>"
-syn match apdlFunction display "^[[:blank:]]*EDADAPT\>"
-syn match apdlFunction display "^[[:blank:]]*EDBVIS\>"
-syn match apdlFunction display "^[[:blank:]]*EDCADAPT\>"
-syn match apdlFunction display "^[[:blank:]]*EDCPU\>"
-syn match apdlFunction display "^[[:blank:]]*EDCSC\>"
-syn match apdlFunction display "^[[:blank:]]*EDCTS\>"
-syn match apdlFunction display "^[[:blank:]]*EDDAMP\>"
-syn match apdlFunction display "^[[:blank:]]*EDDRELAX\>"
-syn match apdlFunction display "^[[:blank:]]*EDDUMP\>"
-syn match apdlFunction display "^[[:blank:]]*EDENERGY\>"
-syn match apdlFunction display "^[[:blank:]]*EDFPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*EDHGLS\>"
-syn match apdlFunction display "^[[:blank:]]*EDHIST\>"
-syn match apdlFunction display "^[[:blank:]]*EDHTIME\>"
-syn match apdlFunction display "^[[:blank:]]*EDINT\>"
-syn match apdlFunction display "^[[:blank:]]*EDLOAD\>"
-syn match apdlFunction display "^[[:blank:]]*EDOPT\>"
-syn match apdlFunction display "^[[:blank:]]*EDOUT\>"
-syn match apdlFunction display "^[[:blank:]]*EDPL\>"
-syn match apdlFunction display "^[[:blank:]]*EDRC\>"
-syn match apdlFunction display "^[[:blank:]]*EDRD\>"
-syn match apdlFunction display "^[[:blank:]]*EDRI\>"
-syn match apdlFunction display "^[[:blank:]]*EDRST\>"
-syn match apdlFunction display "^[[:blank:]]*EDRUN\>"
-syn match apdlFunction display "^[[:blank:]]*EDSHELL\>"
-syn match apdlFunction display "^[[:blank:]]*EDSOLV\>"
-syn match apdlFunction display "^[[:blank:]]*EDSTART\>"
-syn match apdlFunction display "^[[:blank:]]*EDTERM\>"
-syn match apdlFunction display "^[[:blank:]]*EDTP\>"
-syn match apdlFunction display "^[[:blank:]]*EDVEL\>"
-syn match apdlFunction display "^[[:blank:]]*EDWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*REXPORT\>"
-syn match apdlFunction display "^[[:blank:]]*FLOCHECK\>"
-syn match apdlFunction display "^[[:blank:]]*PEMOPTS\>"
-syn match apdlFunction display "^[[:blank:]]*HEMIOPT\>"
-syn match apdlFunction display "^[[:blank:]]*RADOPT\>"
-syn match apdlFunction display "^[[:blank:]]*SPCNOD\>"
-syn match apdlFunction display "^[[:blank:]]*SPCTEMP\>"
-syn match apdlFunction display "^[[:blank:]]*STEF\>"
-syn match apdlFunction display "^[[:blank:]]*V2DOPT\>"
-syn match apdlFunction display "^[[:blank:]]*VFCALC\>"
-syn match apdlFunction display "^[[:blank:]]*VFOPT\>"
-syn match apdlFunction display "^[[:blank:]]*VFQUERY\>"
-syn match apdlFunction display "^[[:blank:]]*QSOPT\>"
-syn match apdlFunction display "^[[:blank:]]*APPEND\>"
-syn match apdlFunction display "^[[:blank:]]*DESOL\>"
-syn match apdlFunction display "^[[:blank:]]*DETAB\>"
-syn match apdlFunction display "^[[:blank:]]*DNSOL\>"
-syn match apdlFunction display "^[[:blank:]]*FILE\>"
-syn match apdlFunction display "^[[:blank:]]*/POST1\>"
-syn match apdlFunction display "^[[:blank:]]*RESET\>"
-syn match apdlFunction display "^[[:blank:]]*SET\>"
-syn match apdlFunction display "^[[:blank:]]*SUBSET\>"
-syn match apdlFunction display "^[[:blank:]]*AVPRIN\>"
-syn match apdlFunction display "^[[:blank:]]*AVRES\>"
-syn match apdlFunction display "^[[:blank:]]*/EFACET\>"
-syn match apdlFunction display "^[[:blank:]]*ERNORM\>"
-syn match apdlFunction display "^[[:blank:]]*FORCE\>"
-syn match apdlFunction display "^[[:blank:]]*INRES\>"
-syn match apdlFunction display "^[[:blank:]]*LAYER\>"
-syn match apdlFunction display "^[[:blank:]]*RSYS\>"
-syn match apdlFunction display "^[[:blank:]]*SHELL\>"
-syn match apdlFunction display "^[[:blank:]]*NSORT\>"
-syn match apdlFunction display "^[[:blank:]]*NUSORT\>"
-syn match apdlFunction display "^[[:blank:]]*PLCONV\>"
-syn match apdlFunction display "^[[:blank:]]*PLDISP\>"
-syn match apdlFunction display "^[[:blank:]]*PLESOL\>"
-syn match apdlFunction display "^[[:blank:]]*PLNSOL\>"
-syn match apdlFunction display "^[[:blank:]]*PLVECT\>"
-syn match apdlFunction display "^[[:blank:]]*PPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*PRCONV\>"
-syn match apdlFunction display "^[[:blank:]]*PRESOL\>"
-syn match apdlFunction display "^[[:blank:]]*PRNLD\>"
-syn match apdlFunction display "^[[:blank:]]*PRNSOL\>"
-syn match apdlFunction display "^[[:blank:]]*FORCE\>"
-syn match apdlFunction display "^[[:blank:]]*PRRSOL\>"
-syn match apdlFunction display "^[[:blank:]]*BEAM188\>"
-syn match apdlFunction display "^[[:blank:]]*BEAM189\>"
-syn match apdlFunction display "^[[:blank:]]*PRVECT\>"
-syn match apdlFunction display "^[[:blank:]]*SUMTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*ESORT\>"
-syn match apdlFunction display "^[[:blank:]]*ETABLE\>"
-syn match apdlFunction display "^[[:blank:]]*EUSORT\>"
-syn match apdlFunction display "^[[:blank:]]*PLETAB\>"
-syn match apdlFunction display "^[[:blank:]]*PLLS\>"
-syn match apdlFunction display "^[[:blank:]]*PLVECT\>"
-syn match apdlFunction display "^[[:blank:]]*PRETAB\>"
-syn match apdlFunction display "^[[:blank:]]*PRVECT\>"
-syn match apdlFunction display "^[[:blank:]]*SABS\>"
-syn match apdlFunction display "^[[:blank:]]*SADD\>"
-syn match apdlFunction display "^[[:blank:]]*SALLOW\>"
-syn match apdlFunction display "^[[:blank:]]*SEXP\>"
-syn match apdlFunction display "^[[:blank:]]*SFACT\>"
-syn match apdlFunction display "^[[:blank:]]*SFCALC\>"
-syn match apdlFunction display "^[[:blank:]]*SMAX\>"
-syn match apdlFunction display "^[[:blank:]]*SMIN\>"
-syn match apdlFunction display "^[[:blank:]]*SMULT\>"
-syn match apdlFunction display "^[[:blank:]]*SSUM\>"
-syn match apdlFunction display "^[[:blank:]]*TALLOW\>"
-syn match apdlFunction display "^[[:blank:]]*VCROSS\>"
-syn match apdlFunction display "^[[:blank:]]*VDOT\>"
-syn match apdlFunction display "^[[:blank:]]*/FORMAT\>"
-syn match apdlFunction display "^[[:blank:]]*/HEADER\>"
-syn match apdlFunction display "^[[:blank:]]*IRLIST\>"
-syn match apdlFunction display "^[[:blank:]]*/PAGE\>"
-syn match apdlFunction display "^[[:blank:]]*PRERR\>"
-syn match apdlFunction display "^[[:blank:]]*PRITER\>"
-syn match apdlFunction display "^[[:blank:]]*ANCNTR\>"
-syn match apdlFunction display "^[[:blank:]]*ANCUT\>"
-syn match apdlFunction display "^[[:blank:]]*ANDATA\>"
-syn match apdlFunction display "^[[:blank:]]*ANDSCL\>"
-syn match apdlFunction display "^[[:blank:]]*ANDYNA\>"
-syn match apdlFunction display "^[[:blank:]]*/ANFILE\>"
-syn match apdlFunction display "^[[:blank:]]*ANFLOW\>"
-syn match apdlFunction display "^[[:blank:]]*ANHARM\>"
-syn match apdlFunction display "^[[:blank:]]*ANTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*ANIM\>"
-syn match apdlFunction display "^[[:blank:]]*ANISOS\>"
-syn match apdlFunction display "^[[:blank:]]*ANMODE\>"
-syn match apdlFunction display "^[[:blank:]]*ANTIME\>"
-syn match apdlFunction display "^[[:blank:]]*TRTIME\>"
-syn match apdlFunction display "^[[:blank:]]*PLTRAC\>"
-syn match apdlFunction display "^[[:blank:]]*PADELE\>"
-syn match apdlFunction display "^[[:blank:]]*PAGET\>"
-syn match apdlFunction display "^[[:blank:]]*PAPUT\>"
-syn match apdlFunction display "^[[:blank:]]*PATH\>"
-syn match apdlFunction display "^[[:blank:]]*PCALC\>"
-syn match apdlFunction display "^[[:blank:]]*PCROSS\>"
-syn match apdlFunction display "^[[:blank:]]*PDEF\>"
-syn match apdlFunction display "^[[:blank:]]*PDOT\>"
-syn match apdlFunction display "^[[:blank:]]*PLPAGM\>"
-syn match apdlFunction display "^[[:blank:]]*PLPATH\>"
-syn match apdlFunction display "^[[:blank:]]*PLSECT\>"
-syn match apdlFunction display "^[[:blank:]]*PMAP\>"
-syn match apdlFunction display "^[[:blank:]]*PPATH\>"
-syn match apdlFunction display "^[[:blank:]]*PRANGE\>"
-syn match apdlFunction display "^[[:blank:]]*PRPATH\>"
-syn match apdlFunction display "^[[:blank:]]*PRSECT\>"
-syn match apdlFunction display "^[[:blank:]]*PVECT\>"
-syn match apdlFunction display "^[[:blank:]]*LCABS\>"
-syn match apdlFunction display "^[[:blank:]]*LCASE\>"
-syn match apdlFunction display "^[[:blank:]]*LCDEF\>"
-syn match apdlFunction display "^[[:blank:]]*LCFACT\>"
-syn match apdlFunction display "^[[:blank:]]*LCFILE\>"
-syn match apdlFunction display "^[[:blank:]]*LCOPER\>"
-syn match apdlFunction display "^[[:blank:]]*LCSEL\>"
-syn match apdlFunction display "^[[:blank:]]*LCSUM\>"
-syn match apdlFunction display "^[[:blank:]]*LCWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*LCZERO\>"
-syn match apdlFunction display "^[[:blank:]]*RAPPND\>"
-syn match apdlFunction display "^[[:blank:]]*CURR2D\>"
-syn match apdlFunction display "^[[:blank:]]*EMAGERR\>"
-syn match apdlFunction display "^[[:blank:]]*EMF\>"
-syn match apdlFunction display "^[[:blank:]]*FLUXV\>"
-syn match apdlFunction display "^[[:blank:]]*FMAGSUM\>"
-syn match apdlFunction display "^[[:blank:]]*FOR2D\>"
-syn match apdlFunction display "^[[:blank:]]*IMPD\>"
-syn match apdlFunction display "^[[:blank:]]*MMF\>"
-syn match apdlFunction display "^[[:blank:]]*PLF2D\>"
-syn match apdlFunction display "^[[:blank:]]*POWERH\>"
-syn match apdlFunction display "^[[:blank:]]*QFACT\>"
-syn match apdlFunction display "^[[:blank:]]*REFLCOEF\>"
-syn match apdlFunction display "^[[:blank:]]*SENERGY\>"
-syn match apdlFunction display "^[[:blank:]]*SPARM\>"
-syn match apdlFunction display "^[[:blank:]]*TORQ2D\>"
-syn match apdlFunction display "^[[:blank:]]*TORQC2D\>"
-syn match apdlFunction display "^[[:blank:]]*TORQSUM\>"
-syn match apdlFunction display "^[[:blank:]]*FE\>"
-syn match apdlFunction display "^[[:blank:]]*FELIST\>"
-syn match apdlFunction display "^[[:blank:]]*FL\>"
-syn match apdlFunction display "^[[:blank:]]*FLLIST\>"
-syn match apdlFunction display "^[[:blank:]]*FP\>"
-syn match apdlFunction display "^[[:blank:]]*FPLIST\>"
-syn match apdlFunction display "^[[:blank:]]*FS\>"
-syn match apdlFunction display "^[[:blank:]]*FSDELE\>"
-syn match apdlFunction display "^[[:blank:]]*FSLIST\>"
-syn match apdlFunction display "^[[:blank:]]*FSNODE\>"
-syn match apdlFunction display "^[[:blank:]]*FSPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*FSSECT\>"
-syn match apdlFunction display "^[[:blank:]]*FTCALC\>"
-syn match apdlFunction display "^[[:blank:]]*FTSIZE\>"
-syn match apdlFunction display "^[[:blank:]]*FTWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*PLTRAC\>"
-syn match apdlFunction display "^[[:blank:]]*TRPDEL\>"
-syn match apdlFunction display "^[[:blank:]]*TRPLIS\>"
-syn match apdlFunction display "^[[:blank:]]*TRPOIN\>"
-syn match apdlFunction display "^[[:blank:]]*FLREAD\>"
-syn match apdlFunction display "^[[:blank:]]*BFINT\>"
-syn match apdlFunction display "^[[:blank:]]*CBDOF\>"
-syn match apdlFunction display "^[[:blank:]]*CYCPHASE\>"
-syn match apdlFunction display "^[[:blank:]]*/EXPAND\>"
-syn match apdlFunction display "^[[:blank:]]*EXPAND\>"
-syn match apdlFunction display "^[[:blank:]]*FSUM\>"
-syn match apdlFunction display "^[[:blank:]]*HFNEAR\>"
-syn match apdlFunction display "^[[:blank:]]*HFSYM\>"
-syn match apdlFunction display "^[[:blank:]]*INTSRF\>"
-syn match apdlFunction display "^[[:blank:]]*KCALC\>"
-syn match apdlFunction display "^[[:blank:]]*NFORCE\>"
-syn match apdlFunction display "^[[:blank:]]*PLCRACK\>"
-syn match apdlFunction display "^[[:blank:]]*PLHFFAR\>"
-syn match apdlFunction display "^[[:blank:]]*PRHFFAR\>"
-syn match apdlFunction display "^[[:blank:]]*SPOINT\>"
-syn match apdlFunction display "^[[:blank:]]*STAT\>"
-syn match apdlFunction display "^[[:blank:]]*CALC\>"
-syn match apdlFunction display "^[[:blank:]]*DATADEF\>"
-syn match apdlFunction display "^[[:blank:]]*DEFINE\>"
-syn match apdlFunction display "^[[:blank:]]*DISPLAY\>"
-syn match apdlFunction display "^[[:blank:]]*LCCALC\>"
-syn match apdlFunction display "^[[:blank:]]*POINT\>"
-syn match apdlFunction display "^[[:blank:]]*PRINT\>"
-syn match apdlFunction display "^[[:blank:]]*SORT\>"
-syn match apdlFunction display "^[[:blank:]]*SPEC\>"
-syn match apdlFunction display "^[[:blank:]]*DATA\>"
-syn match apdlFunction display "^[[:blank:]]*EDREAD\>"
-syn match apdlFunction display "^[[:blank:]]*ESOL\>"
-syn match apdlFunction display "^[[:blank:]]*FILE\>"
-syn match apdlFunction display "^[[:blank:]]*GAPF\>"
-syn match apdlFunction display "^[[:blank:]]*NSOL\>"
-syn match apdlFunction display "^[[:blank:]]*NSTORE\>"
-syn match apdlFunction display "^[[:blank:]]*NUMVAR\>"
-syn match apdlFunction display "^[[:blank:]]*/POST26\>"
-syn match apdlFunction display "^[[:blank:]]*RESET\>"
-syn match apdlFunction display "^[[:blank:]]*RFORCE\>"
-syn match apdlFunction display "^[[:blank:]]*/RGB\>"
-syn match apdlFunction display "^[[:blank:]]*SOLU\>"
-syn match apdlFunction display "^[[:blank:]]*STORE\>"
-syn match apdlFunction display "^[[:blank:]]*TIMERANGE\>"
-syn match apdlFunction display "^[[:blank:]]*VARDEL\>"
-syn match apdlFunction display "^[[:blank:]]*VARNAM\>"
-syn match apdlFunction display "^[[:blank:]]*CFACT\>"
-syn match apdlFunction display "^[[:blank:]]*FORCE\>"
-syn match apdlFunction display "^[[:blank:]]*LAYERP26\>"
-syn match apdlFunction display "^[[:blank:]]*SHELL\>"
-syn match apdlFunction display "^[[:blank:]]*TVAR\>"
-syn match apdlFunction display "^[[:blank:]]*ABS\>"
-syn match apdlFunction display "^[[:blank:]]*ADD\>"
-syn match apdlFunction display "^[[:blank:]]*ATAN\>"
-syn match apdlFunction display "^[[:blank:]]*CLOG\>"
-syn match apdlFunction display "^[[:blank:]]*CONJUG\>"
-syn match apdlFunction display "^[[:blank:]]*DERIV\>"
-syn match apdlFunction display "^[[:blank:]]*EXP\>"
-syn match apdlFunction display "^[[:blank:]]*FILLDATA\>"
-syn match apdlFunction display "^[[:blank:]]*IMAGIN\>"
-syn match apdlFunction display "^[[:blank:]]*INT1\>"
-syn match apdlFunction display "^[[:blank:]]*LARGE\>"
-syn match apdlFunction display "^[[:blank:]]*NLOG\>"
-syn match apdlFunction display "^[[:blank:]]*PROD\>"
-syn match apdlFunction display "^[[:blank:]]*QUOT\>"
-syn match apdlFunction display "^[[:blank:]]*REALVAR\>"
-syn match apdlFunction display "^[[:blank:]]*SMALL\>"
-syn match apdlFunction display "^[[:blank:]]*SQRT\>"
-syn match apdlFunction display "^[[:blank:]]*PLCPLX\>"
-syn match apdlFunction display "^[[:blank:]]*PLTIME\>"
-syn match apdlFunction display "^[[:blank:]]*PLVAR\>"
-syn match apdlFunction display "^[[:blank:]]*SPREAD\>"
-syn match apdlFunction display "^[[:blank:]]*XVAR\>"
-syn match apdlFunction display "^[[:blank:]]*EXTREM\>"
-syn match apdlFunction display "^[[:blank:]]*LINES\>"
-syn match apdlFunction display "^[[:blank:]]*NPRINT\>"
-syn match apdlFunction display "^[[:blank:]]*PRCPLX\>"
-syn match apdlFunction display "^[[:blank:]]*PRTIME\>"
-syn match apdlFunction display "^[[:blank:]]*PRVAR\>"
-syn match apdlFunction display "^[[:blank:]]*CVAR\>"
-syn match apdlFunction display "^[[:blank:]]*PMGTRAN\>"
-syn match apdlFunction display "^[[:blank:]]*RESP\>"
-syn match apdlFunction display "^[[:blank:]]*RPSD\>"
-syn match apdlFunction display "^[[:blank:]]*SMOOTH\>"
-syn match apdlFunction display "^[[:blank:]]*VGET\>"
-syn match apdlFunction display "^[[:blank:]]*VPUT\>"
-syn match apdlFunction display "^[[:blank:]]*STAT\>"
-syn match apdlFunction display "^[[:blank:]]*DEFINE\>"
-syn match apdlFunction display "^[[:blank:]]*OPERATE\>"
-syn match apdlFunction display "^[[:blank:]]*PLOTTING\>"
-syn match apdlFunction display "^[[:blank:]]*PRINT\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX2\>"
-syn match apdlFunction display "^[[:blank:]]*DUMP\>"
-syn match apdlFunction display "^[[:blank:]]*FILEAUX2\>"
-syn match apdlFunction display "^[[:blank:]]*FORM\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX3\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX3\>"
-syn match apdlFunction display "^[[:blank:]]*COMPRESS\>"
-syn match apdlFunction display "^[[:blank:]]*DELETE\>"
-syn match apdlFunction display "^[[:blank:]]*FILEAUX3\>"
-syn match apdlFunction display "^[[:blank:]]*LIST\>"
-syn match apdlFunction display "^[[:blank:]]*UNDELETE\>"
-syn match apdlFunction display "^[[:blank:]]*/BATCH\>"
-syn match apdlFunction display "^[[:blank:]]*/CONFIG\>"
-syn match apdlFunction display "^[[:blank:]]*/EOF\>"
-syn match apdlFunction display "^[[:blank:]]*/EXIT\>"
-syn match apdlFunction display "^[[:blank:]]*/FILNAME\>"
-syn match apdlFunction display "^[[:blank:]]*HELP\>"
-syn match apdlFunction display "^[[:blank:]]*/INPUT\>"
-syn match apdlFunction display "^[[:blank:]]*KEYW\>"
-syn match apdlFunction display "^[[:blank:]]*MEMM\>"
-syn match apdlFunction display "^[[:blank:]]*/MENU\>"
-syn match apdlFunction display "^[[:blank:]]*/MSTART\>"
-syn match apdlFunction display "^[[:blank:]]*/NERR\>"
-syn match apdlFunction display "^[[:blank:]]*/OUTPUT\>"
-syn match apdlFunction display "^[[:blank:]]*/STATUS\>"
-syn match apdlFunction display "^[[:blank:]]*/SYP\>"
-syn match apdlFunction display "^[[:blank:]]*/SYS\>"
-syn match apdlFunction display "^[[:blank:]]*/UI\>"
-syn match apdlFunction display "^[[:blank:]]*/UIS\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX2\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX3\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX12\>"
-syn match apdlFunction display "^[[:blank:]]*/AUX15\>"
-syn match apdlFunction display "^[[:blank:]]*FINISH\>"
-syn match apdlFunction display "^[[:blank:]]*/OPT\>"
-syn match apdlFunction display "^[[:blank:]]*/POST1\>"
-syn match apdlFunction display "^[[:blank:]]*/POST26\>"
-syn match apdlFunction display "^[[:blank:]]*/PREP7\>"
-syn match apdlFunction display "^[[:blank:]]*/QUIT\>"
-syn match apdlFunction display "^[[:blank:]]*/RUNST\>"
-syn match apdlFunction display "^[[:blank:]]*/SOLU\>"
-syn match apdlFunction display "^[[:blank:]]*/ASSIGN\>"
-syn match apdlFunction display "^[[:blank:]]*/CLOG\>"
-syn match apdlFunction display "^[[:blank:]]*/COPY\>"
-syn match apdlFunction display "^[[:blank:]]*/DELETE\>"
-syn match apdlFunction display "^[[:blank:]]*/FDELE\>"
-syn match apdlFunction display "^[[:blank:]]*/FTYPE\>"
-syn match apdlFunction display "^[[:blank:]]*LGWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*\*LIST\>"
-syn match apdlFunction display "^[[:blank:]]*/RENAME\>"
-syn match apdlFunction display "^[[:blank:]]*C\*\*\*\>"
-syn match apdlFunction display "^[[:blank:]]*/COM\>"
-syn match apdlFunction display "^[[:blank:]]*/GO\>"
-syn match apdlFunction display "^[[:blank:]]*/GOLIST\>"
-syn match apdlFunction display "^[[:blank:]]*/GOPR\>"
-syn match apdlFunction display "^[[:blank:]]*/NOLIST\>"
-syn match apdlFunction display "^[[:blank:]]*/NOPR\>"
-syn match apdlFunction display "^[[:blank:]]*PDANL\>"
-syn match apdlFunction display "^[[:blank:]]*PDCORR\>"
-syn match apdlFunction display "^[[:blank:]]*PDPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*PDVAR\>"
-syn match apdlFunction display "^[[:blank:]]*PDBBM\>"
-syn match apdlFunction display "^[[:blank:]]*PDCCD\>"
-syn match apdlFunction display "^[[:blank:]]*PDDMCS\>"
-syn match apdlFunction display "^[[:blank:]]*PDMETH\>"
-syn match apdlFunction display "^[[:blank:]]*PDUSER\>"
-syn match apdlFunction display "^[[:blank:]]*PDEXE\>"
-syn match apdlFunction display "^[[:blank:]]*PDCDF\>"
-syn match apdlFunction display "^[[:blank:]]*PDCMAT\>"
-syn match apdlFunction display "^[[:blank:]]*PDHIST\>"
-syn match apdlFunction display "^[[:blank:]]*PDPINV\>"
-syn match apdlFunction display "^[[:blank:]]*PDPROB\>"
-syn match apdlFunction display "^[[:blank:]]*PDROPT\>"
-syn match apdlFunction display "^[[:blank:]]*PDSCAT\>"
-syn match apdlFunction display "^[[:blank:]]*PDSENS\>"
-syn match apdlFunction display "^[[:blank:]]*PDSHIS\>"
-syn match apdlFunction display "^[[:blank:]]*PDWRITE\>"
-syn match apdlFunction display "^[[:blank:]]*PDCLR\>"
-syn match apdlFunction display "^[[:blank:]]*PDRESU\>"
-syn match apdlFunction display "^[[:blank:]]*PDSAVE\>"
-syn match apdlFunction display "^[[:blank:]]*RSFIT\>"
-syn match apdlFunction display "^[[:blank:]]*RSPLOT\>"
-syn match apdlFunction display "^[[:blank:]]*RSPRNT\>"
-syn match apdlFunction display "^[[:blank:]]*RSSIMS\>"
-syn match apdlFunction display "^[[:blank:]]*/PDS\>"
-syn match apdlFunction display "^[[:blank:]]*PDINQR\>"
+" autoextracted from a few files of the ANSYS 5.7.1 html documentation
+syn match apdlFunction display "a\>" contained
+syn match apdlFunction display "aadd\>" contained
+syn match apdlFunction display "aatt\>" contained
+syn match apdlFunction display "\*abbr\>" contained
+syn match apdlFunction display "abbres\>" contained
+syn match apdlFunction display "abbsav\>" contained
+syn match apdlFunction display "abs\>" contained
+syn match apdlFunction display "accat\>" contained
+syn match apdlFunction display "acel\>" contained
+syn match apdlFunction display "aclear\>" contained
+syn match apdlFunction display "adapt\>" contained
+syn match apdlFunction display "add\>" contained
+syn match apdlFunction display "addam\>" contained
+syn match apdlFunction display "adele\>" contained
+syn match apdlFunction display "adgl\>" contained
+syn match apdlFunction display "adrag\>" contained
+syn match apdlFunction display "aesize\>" contained
+syn match apdlFunction display "afillt\>" contained
+syn match apdlFunction display "aflist\>" contained
+syn match apdlFunction display "afsurf\>" contained
+syn match apdlFunction display "\*afun\>" contained
+syn match apdlFunction display "agen\>" contained
+syn match apdlFunction display "aglue\>" contained
+syn match apdlFunction display "aina\>" contained
+syn match apdlFunction display "ainp\>" contained
+syn match apdlFunction display "ainv\>" contained
+syn match apdlFunction display "al\>" contained
+syn match apdlFunction display "alist\>" contained
+syn match apdlFunction display "allsel\>" contained
+syn match apdlFunction display "alpfill\>" contained
+syn match apdlFunction display "alphad\>" contained
+syn match apdlFunction display "amap\>" contained
+syn match apdlFunction display "amesh\>" contained
+syn match apdlFunction display "/an3d\>" contained
+syn match apdlFunction display "ancntr\>" contained
+syn match apdlFunction display "ancut\>" contained
+syn match apdlFunction display "andata\>" contained
+syn match apdlFunction display "andscl\>" contained
+syn match apdlFunction display "andyna\>" contained
+syn match apdlFunction display "/anfile\>" contained
+syn match apdlFunction display "anflow\>" contained
+syn match apdlFunction display "/angle\>" contained
+syn match apdlFunction display "anharm\>" contained
+syn match apdlFunction display "anim\>" contained
+syn match apdlFunction display "anisos\>" contained
+syn match apdlFunction display "anmode\>" contained
+syn match apdlFunction display "/annot\>" contained
+syn match apdlFunction display "anorm\>" contained
+syn match apdlFunction display "antime\>" contained
+syn match apdlFunction display "antype\>" contained
+syn match apdlFunction display "/anum\>" contained
+syn match apdlFunction display "aoffst\>" contained
+syn match apdlFunction display "aovlap\>" contained
+syn match apdlFunction display "aplot\>" contained
+syn match apdlFunction display "append\>" contained
+syn match apdlFunction display "aptn\>" contained
+syn match apdlFunction display "arclen\>" contained
+syn match apdlFunction display "arcollapse\>" contained
+syn match apdlFunction display "arctrm\>" contained
+syn match apdlFunction display "ardetach\>" contained
+syn match apdlFunction display "areas\>" contained
+syn match apdlFunction display "arefine\>" contained
+syn match apdlFunction display "areverse\>" contained
+syn match apdlFunction display "arfill\>" contained
+syn match apdlFunction display "armerge\>" contained
+syn match apdlFunction display "arotat\>" contained
+syn match apdlFunction display "arscale\>" contained
+syn match apdlFunction display "arsplit\>" contained
+syn match apdlFunction display "arsym\>" contained
+syn match apdlFunction display "asba\>" contained
+syn match apdlFunction display "asbl\>" contained
+syn match apdlFunction display "asbv\>" contained
+syn match apdlFunction display "asbw\>" contained
+syn match apdlFunction display "\*ask\>" contained
+syn match apdlFunction display "askin\>" contained
+syn match apdlFunction display "asll\>" contained
+syn match apdlFunction display "aslv\>" contained
+syn match apdlFunction display "/assign\>" contained
+syn match apdlFunction display "asub\>" contained
+syn match apdlFunction display "asum\>" contained
+syn match apdlFunction display "atan\>" contained
+syn match apdlFunction display "atran\>" contained
+syn match apdlFunction display "atype\>" contained
+syn match apdlFunction display "/auto\>" contained
+syn match apdlFunction display "autots\>" contained
+syn match apdlFunction display "/aux3\>" contained
+syn match apdlFunction display "avprin\>" contained
+syn match apdlFunction display "avres\>" contained
+syn match apdlFunction display "/axlab\>" contained
+syn match apdlFunction display "/batch\>" contained
+syn match apdlFunction display "beam188\>" contained
+syn match apdlFunction display "beam189\>" contained
+syn match apdlFunction display "bellow\>" contained
+syn match apdlFunction display "bend\>" contained
+syn match apdlFunction display "betad\>" contained
+syn match apdlFunction display "bf\>" contained
+syn match apdlFunction display "bfa\>" contained
+syn match apdlFunction display "bfadele\>" contained
+syn match apdlFunction display "bfalist\>" contained
+syn match apdlFunction display "bfcum\>" contained
+syn match apdlFunction display "bfdele\>" contained
+syn match apdlFunction display "bfe\>" contained
+syn match apdlFunction display "bfecum\>" contained
+syn match apdlFunction display "bfedele\>" contained
+syn match apdlFunction display "bfelist\>" contained
+syn match apdlFunction display "bfescal\>" contained
+syn match apdlFunction display "bfint\>" contained
+syn match apdlFunction display "bfk\>" contained
+syn match apdlFunction display "bfkdele\>" contained
+syn match apdlFunction display "bfklist\>" contained
+syn match apdlFunction display "bfl\>" contained
+syn match apdlFunction display "bfldele\>" contained
+syn match apdlFunction display "bflist\>" contained
+syn match apdlFunction display "bfllist\>" contained
+syn match apdlFunction display "bfscale\>" contained
+syn match apdlFunction display "bftran\>" contained
+syn match apdlFunction display "bfunif\>" contained
+syn match apdlFunction display "bfv\>" contained
+syn match apdlFunction display "bfvdele\>" contained
+syn match apdlFunction display "bfvlist\>" contained
+syn match apdlFunction display "bioopt\>" contained
+syn match apdlFunction display "biot\>" contained
+syn match apdlFunction display "blc4\>" contained
+syn match apdlFunction display "blc5\>" contained
+syn match apdlFunction display "block\>" contained
+syn match apdlFunction display "bool\>" contained
+syn match apdlFunction display "boptn\>" contained
+syn match apdlFunction display "branch\>" contained
+syn match apdlFunction display "bsplin\>" contained
+syn match apdlFunction display "btol\>" contained
+syn match apdlFunction display "bucopt\>" contained
+syn match apdlFunction display "c\*\*\*\>" contained
+syn match apdlFunction display "calc\>" contained
+syn match apdlFunction display "cbdof\>" contained
+syn match apdlFunction display "cdread\>" contained
+syn match apdlFunction display "cdwrite\>" contained
+syn match apdlFunction display "ce\>" contained
+syn match apdlFunction display "cecmod\>" contained
+syn match apdlFunction display "cecyc\>" contained
+syn match apdlFunction display "cedele\>" contained
+syn match apdlFunction display "ceintf\>" contained
+syn match apdlFunction display "celist\>" contained
+syn match apdlFunction display "center\>" contained
+syn match apdlFunction display "ceqn\>" contained
+syn match apdlFunction display "cerig\>" contained
+syn match apdlFunction display "cesgen\>" contained
+syn match apdlFunction display "cfact\>" contained
+syn match apdlFunction display "\*cfclos\>" contained
+syn match apdlFunction display "\*cfopen\>" contained
+syn match apdlFunction display "\*cfwrite\>" contained
+syn match apdlFunction display "cgloc\>" contained
+syn match apdlFunction display "cgomga\>" contained
+syn match apdlFunction display "check\>" contained
+syn match apdlFunction display "chkmsh\>" contained
+syn match apdlFunction display "circle\>" contained
+syn match apdlFunction display "/clabel\>" contained
+syn match apdlFunction display "/clear\>" contained
+syn match apdlFunction display "clocal\>" contained
+syn match apdlFunction display "/clog\>" contained
+syn match apdlFunction display "clog\>" contained
+syn match apdlFunction display "clrmshln\>" contained
+syn match apdlFunction display "cm\>" contained
+syn match apdlFunction display "/cmap\>" contained
+syn match apdlFunction display "cmatrix\>" contained
+syn match apdlFunction display "cmdele\>" contained
+syn match apdlFunction display "cmedit\>" contained
+syn match apdlFunction display "cmgrp\>" contained
+syn match apdlFunction display "cmlist\>" contained
+syn match apdlFunction display "cmplot\>" contained
+syn match apdlFunction display "cnvtol\>" contained
+syn match apdlFunction display "/color\>" contained
+syn match apdlFunction display "/com\>" contained
+syn match apdlFunction display "compress\>" contained
+syn match apdlFunction display "con4\>" contained
+syn match apdlFunction display "cone\>" contained
+syn match apdlFunction display "/config\>" contained
+syn match apdlFunction display "conjug\>" contained
+syn match apdlFunction display "/contour\>" contained
+syn match apdlFunction display "/copy\>" contained
+syn match apdlFunction display "couple\>" contained
+syn match apdlFunction display "coval\>" contained
+syn match apdlFunction display "cp\>" contained
+syn match apdlFunction display "cpcyc\>" contained
+syn match apdlFunction display "cpdele\>" contained
+syn match apdlFunction display "cpintf\>" contained
+syn match apdlFunction display "/cplane\>" contained
+syn match apdlFunction display "cplgen\>" contained
+syn match apdlFunction display "cplist\>" contained
+syn match apdlFunction display "cpngen\>" contained
+syn match apdlFunction display "cpsgen\>" contained
+syn match apdlFunction display "cqc\>" contained
+syn match apdlFunction display "crplim\>" contained
+syn match apdlFunction display "cs\>" contained
+syn match apdlFunction display "cscir\>" contained
+syn match apdlFunction display "csdele\>" contained
+syn match apdlFunction display "cskp\>" contained
+syn match apdlFunction display "cslist\>" contained
+syn match apdlFunction display "cswpla\>" contained
+syn match apdlFunction display "csys\>" contained
+syn match apdlFunction display "/ctype\>" contained
+syn match apdlFunction display "curr2d\>" contained
+syn match apdlFunction display "cutcontrol\>" contained
+syn match apdlFunction display "/cval\>" contained
+syn match apdlFunction display "cvar\>" contained
+syn match apdlFunction display "cycgen\>" contained
+syn match apdlFunction display "cycphase\>" contained
+syn match apdlFunction display "cycsol\>" contained
+syn match apdlFunction display "cyl4\>" contained
+syn match apdlFunction display "cyl5\>" contained
+syn match apdlFunction display "cylind\>" contained
+syn match apdlFunction display "d\>" contained
+syn match apdlFunction display "da\>" contained
+syn match apdlFunction display "dadele\>" contained
+syn match apdlFunction display "dalist\>" contained
+syn match apdlFunction display "damorph\>" contained
+syn match apdlFunction display "data\>" contained
+syn match apdlFunction display "datadef\>" contained
+syn match apdlFunction display "dcgomg\>" contained
+syn match apdlFunction display "dcum\>" contained
+syn match apdlFunction display "ddele\>" contained
+syn match apdlFunction display "ddsopt\>" contained
+syn match apdlFunction display "deact\>" contained
+syn match apdlFunction display "define\>" contained
+syn match apdlFunction display "\*del\>" contained
+syn match apdlFunction display "/delete\>" contained
+syn match apdlFunction display "delete\>" contained
+syn match apdlFunction display "deltim\>" contained
+syn match apdlFunction display "demorph\>" contained
+syn match apdlFunction display "deriv\>" contained
+syn match apdlFunction display "desize\>" contained
+syn match apdlFunction display "desol\>" contained
+syn match apdlFunction display "detab\>" contained
+syn match apdlFunction display "/devdisp\>" contained
+syn match apdlFunction display "/device\>" contained
+syn match apdlFunction display "dig\>" contained
+syn match apdlFunction display "digit\>" contained
+syn match apdlFunction display "\*dim\>" contained
+syn match apdlFunction display "display\>" contained
+syn match apdlFunction display "/dist\>" contained
+syn match apdlFunction display "dk\>" contained
+syn match apdlFunction display "dkdele\>" contained
+syn match apdlFunction display "dklist\>" contained
+syn match apdlFunction display "dl\>" contained
+syn match apdlFunction display "dldele\>" contained
+syn match apdlFunction display "dlist\>" contained
+syn match apdlFunction display "dllist\>" contained
+syn match apdlFunction display "dmove\>" contained
+syn match apdlFunction display "dmprat\>" contained
+syn match apdlFunction display "dnsol\>" contained
+syn match apdlFunction display "dof\>" contained
+syn match apdlFunction display "dofsel\>" contained
+syn match apdlFunction display "domega\>" contained
+syn match apdlFunction display "/dscale\>" contained
+syn match apdlFunction display "dscale\>" contained
+syn match apdlFunction display "dset\>" contained
+syn match apdlFunction display "dsum\>" contained
+syn match apdlFunction display "dsurf\>" contained
+syn match apdlFunction display "dsym\>" contained
+syn match apdlFunction display "dsys\>" contained
+syn match apdlFunction display "dtran\>" contained
+syn match apdlFunction display "dump\>" contained
+syn match apdlFunction display "/dv3d\>" contained
+syn match apdlFunction display "dvmorph\>" contained
+syn match apdlFunction display "dynopt\>" contained
+syn match apdlFunction display "e\>" contained
+syn match apdlFunction display "ealive\>" contained
+syn match apdlFunction display "edadapt\>" contained
+syn match apdlFunction display "edasmp\>" contained
+syn match apdlFunction display "edbound\>" contained
+syn match apdlFunction display "edbvis\>" contained
+syn match apdlFunction display "edbx\>" contained
+syn match apdlFunction display "edcadapt\>" contained
+syn match apdlFunction display "edcgen\>" contained
+syn match apdlFunction display "edclist\>" contained
+syn match apdlFunction display "edcontact\>" contained
+syn match apdlFunction display "edcpu\>" contained
+syn match apdlFunction display "edcrb\>" contained
+syn match apdlFunction display "edcsc\>" contained
+syn match apdlFunction display "edcts\>" contained
+syn match apdlFunction display "edcurve\>" contained
+syn match apdlFunction display "eddamp\>" contained
+syn match apdlFunction display "eddc\>" contained
+syn match apdlFunction display "eddrelax\>" contained
+syn match apdlFunction display "eddump\>" contained
+syn match apdlFunction display "edele\>" contained
+syn match apdlFunction display "edenergy\>" contained
+syn match apdlFunction display "edfplot\>" contained
+syn match apdlFunction display "/edge\>" contained
+syn match apdlFunction display "edhgls\>" contained
+syn match apdlFunction display "edhist\>" contained
+syn match apdlFunction display "edhtime\>" contained
+syn match apdlFunction display "edint\>" contained
+syn match apdlFunction display "edipart\>" contained
+syn match apdlFunction display "edlcs\>" contained
+syn match apdlFunction display "edload\>" contained
+syn match apdlFunction display "edmp\>" contained
+syn match apdlFunction display "ednb\>" contained
+syn match apdlFunction display "edndtsd\>" contained
+syn match apdlFunction display "ednrot\>" contained
+syn match apdlFunction display "edopt\>" contained
+syn match apdlFunction display "edout\>" contained
+syn match apdlFunction display "edpart\>" contained
+syn match apdlFunction display "edpc\>" contained
+syn match apdlFunction display "edpl\>" contained
+syn match apdlFunction display "edrc\>" contained
+syn match apdlFunction display "edrd\>" contained
+syn match apdlFunction display "edread\>" contained
+syn match apdlFunction display "edri\>" contained
+syn match apdlFunction display "edrst\>" contained
+syn match apdlFunction display "edrun\>" contained
+syn match apdlFunction display "edshell\>" contained
+syn match apdlFunction display "edsolv\>" contained
+syn match apdlFunction display "edsp\>" contained
+syn match apdlFunction display "edstart\>" contained
+syn match apdlFunction display "edterm\>" contained
+syn match apdlFunction display "edtp\>" contained
+syn match apdlFunction display "edvel\>" contained
+syn match apdlFunction display "edweld\>" contained
+syn match apdlFunction display "edwrite\>" contained
+syn match apdlFunction display "/efacet\>" contained
+syn match apdlFunction display "egen\>" contained
+syn match apdlFunction display "eintf\>" contained
+syn match apdlFunction display "ekill\>" contained
+syn match apdlFunction display "elem\>" contained
+syn match apdlFunction display "elist\>" contained
+syn match apdlFunction display "emagerr\>" contained
+syn match apdlFunction display "emf\>" contained
+syn match apdlFunction display "emid\>" contained
+syn match apdlFunction display "emis\>" contained
+syn match apdlFunction display "emodif\>" contained
+syn match apdlFunction display "emore\>" contained
+syn match apdlFunction display "emsym\>" contained
+syn match apdlFunction display "emtgen\>" contained
+syn match apdlFunction display "emunit\>" contained
+syn match apdlFunction display "en\>" contained
+syn match apdlFunction display "engen\>" contained
+syn match apdlFunction display "enorm\>" contained
+syn match apdlFunction display "ensym\>" contained
+syn match apdlFunction display "eorient\>" contained
+syn match apdlFunction display "eplot\>" contained
+syn match apdlFunction display "eqslv\>" contained
+syn match apdlFunction display "/erase\>" contained
+syn match apdlFunction display "erase\>" contained
+syn match apdlFunction display "eread\>" contained
+syn match apdlFunction display "erefine\>" contained
+syn match apdlFunction display "eresx\>" contained
+syn match apdlFunction display "ernorm\>" contained
+syn match apdlFunction display "errang\>" contained
+syn match apdlFunction display "/eshape\>" contained
+syn match apdlFunction display "esize\>" contained
+syn match apdlFunction display "esla\>" contained
+syn match apdlFunction display "esll\>" contained
+syn match apdlFunction display "esln\>" contained
+syn match apdlFunction display "eslv\>" contained
+syn match apdlFunction display "esol\>" contained
+syn match apdlFunction display "esort\>" contained
+syn match apdlFunction display "essolv\>" contained
+syn match apdlFunction display "estif\>" contained
+syn match apdlFunction display "esurf\>" contained
+syn match apdlFunction display "esym\>" contained
+syn match apdlFunction display "esys\>" contained
+syn match apdlFunction display "et\>" contained
+syn match apdlFunction display "etable\>" contained
+syn match apdlFunction display "etchg\>" contained
+syn match apdlFunction display "etdele\>" contained
+syn match apdlFunction display "etlist\>" contained
+syn match apdlFunction display "etype\>" contained
+syn match apdlFunction display "eusort\>" contained
+syn match apdlFunction display "\*eval\>" contained
+syn match apdlFunction display "ewrite\>" contained
+syn match apdlFunction display "exp\>" contained
+syn match apdlFunction display "/expand\>" contained
+syn match apdlFunction display "expand\>" contained
+syn match apdlFunction display "expass\>" contained
+syn match apdlFunction display "expsol\>" contained
+syn match apdlFunction display "extopt\>" contained
+syn match apdlFunction display "extrem\>" contained
+syn match apdlFunction display "f\>" contained
+syn match apdlFunction display "/facet\>" contained
+syn match apdlFunction display "fatigue\>" contained
+syn match apdlFunction display "fcum\>" contained
+syn match apdlFunction display "/fdele\>" contained
+syn match apdlFunction display "fdele\>" contained
+syn match apdlFunction display "fe\>" contained
+syn match apdlFunction display "febody\>" contained
+syn match apdlFunction display "fecons\>" contained
+syn match apdlFunction display "fefor\>" contained
+syn match apdlFunction display "felist\>" contained
+syn match apdlFunction display "fesurf\>" contained
+syn match apdlFunction display "file\>" contained
+syn match apdlFunction display "fileaux2\>" contained
+syn match apdlFunction display "fileaux3\>" contained
+syn match apdlFunction display "filedisp\>" contained
+syn match apdlFunction display "fill\>" contained
+syn match apdlFunction display "filldata\>" contained
+syn match apdlFunction display "/filname\>" contained
+syn match apdlFunction display "finish\>" contained
+syn match apdlFunction display "fitem\>" contained
+syn match apdlFunction display "fk\>" contained
+syn match apdlFunction display "fkdele\>" contained
+syn match apdlFunction display "fklist\>" contained
+syn match apdlFunction display "fl\>" contained
+syn match apdlFunction display "flange\>" contained
+syn match apdlFunction display "fldata\>" contained
+syn match apdlFunction display "fldata1\>" contained
+syn match apdlFunction display "fldata10\>" contained
+syn match apdlFunction display "fldata11\>" contained
+syn match apdlFunction display "fldata12\>" contained
+syn match apdlFunction display "fldata13\>" contained
+syn match apdlFunction display "fldata14\>" contained
+syn match apdlFunction display "fldata15\>" contained
+syn match apdlFunction display "fldata16\>" contained
+syn match apdlFunction display "fldata17\>" contained
+syn match apdlFunction display "fldata18\>" contained
+syn match apdlFunction display "fldata19\>" contained
+syn match apdlFunction display "fldata2\>" contained
+syn match apdlFunction display "fldata20\>" contained
+syn match apdlFunction display "fldata20a\>" contained
+syn match apdlFunction display "fldata21\>" contained
+syn match apdlFunction display "fldata22\>" contained
+syn match apdlFunction display "fldata23\>" contained
+syn match apdlFunction display "fldata24\>" contained
+syn match apdlFunction display "fldata24a\>" contained
+syn match apdlFunction display "fldata24b\>" contained
+syn match apdlFunction display "fldata24c\>" contained
+syn match apdlFunction display "fldata24d\>" contained
+syn match apdlFunction display "fldata25\>" contained
+syn match apdlFunction display "fldata26\>" contained
+syn match apdlFunction display "fldata27\>" contained
+syn match apdlFunction display "fldata28\>" contained
+syn match apdlFunction display "fldata29\>" contained
+syn match apdlFunction display "fldata3\>" contained
+syn match apdlFunction display "fldata30\>" contained
+syn match apdlFunction display "fldata31\>" contained
+syn match apdlFunction display "fldata32\>" contained
+syn match apdlFunction display "fldata33\>" contained
+syn match apdlFunction display "fldata34\>" contained
+syn match apdlFunction display "fldata35\>" contained
+syn match apdlFunction display "fldata36\>" contained
+syn match apdlFunction display "fldata4\>" contained
+syn match apdlFunction display "fldata4a\>" contained
+syn match apdlFunction display "fldata5\>" contained
+syn match apdlFunction display "fldata6\>" contained
+syn match apdlFunction display "fldata7\>" contained
+syn match apdlFunction display "fldata8\>" contained
+syn match apdlFunction display "fldata9\>" contained
+syn match apdlFunction display "flist\>" contained
+syn match apdlFunction display "fllist\>" contained
+syn match apdlFunction display "flocheck\>" contained
+syn match apdlFunction display "flotran\>" contained
+syn match apdlFunction display "flread\>" contained
+syn match apdlFunction display "flst\>" contained
+syn match apdlFunction display "fluxv\>" contained
+syn match apdlFunction display "fmagbc\>" contained
+syn match apdlFunction display "fmagsum\>" contained
+syn match apdlFunction display "/focus\>" contained
+syn match apdlFunction display "for2d\>" contained
+syn match apdlFunction display "force\>" contained
+syn match apdlFunction display "form\>" contained
+syn match apdlFunction display "/format\>" contained
+syn match apdlFunction display "fp\>" contained
+syn match apdlFunction display "fplist\>" contained
+syn match apdlFunction display "freq\>" contained
+syn match apdlFunction display "fs\>" contained
+syn match apdlFunction display "fscale\>" contained
+syn match apdlFunction display "fsdele\>" contained
+syn match apdlFunction display "fslist\>" contained
+syn match apdlFunction display "fsnode\>" contained
+syn match apdlFunction display "fsplot\>" contained
+syn match apdlFunction display "fssect\>" contained
+syn match apdlFunction display "fsum\>" contained
+syn match apdlFunction display "ftcalc\>" contained
+syn match apdlFunction display "ftran\>" contained
+syn match apdlFunction display "ftsize\>" contained
+syn match apdlFunction display "ftwrite\>" contained
+syn match apdlFunction display "/ftype\>" contained
+syn match apdlFunction display "fvmesh\>" contained
+syn match apdlFunction display "gap\>" contained
+syn match apdlFunction display "gapf\>" contained
+syn match apdlFunction display "gapfinish\>" contained
+syn match apdlFunction display "gaplist\>" contained
+syn match apdlFunction display "gapmerge\>" contained
+syn match apdlFunction display "gapopt\>" contained
+syn match apdlFunction display "gapplot\>" contained
+syn match apdlFunction display "gauge\>" contained
+syn match apdlFunction display "gcgen\>" contained
+syn match apdlFunction display "/gcmd\>" contained
+syn match apdlFunction display "genopt\>" contained
+syn match apdlFunction display "geom\>" contained
+syn match apdlFunction display "geometry\>" contained
+syn match apdlFunction display "\*get\>" contained
+syn match apdlFunction display "/gfile\>" contained
+syn match apdlFunction display "/gformat\>" contained
+syn match apdlFunction display "/gline\>" contained
+syn match apdlFunction display "/go\>" contained
+syn match apdlFunction display "\*go\>" contained
+syn match apdlFunction display "/golist\>" contained
+syn match apdlFunction display "/gopr\>" contained
+syn match apdlFunction display "gp\>" contained
+syn match apdlFunction display "gpdele\>" contained
+syn match apdlFunction display "gplist\>" contained
+syn match apdlFunction display "gplot\>" contained
+syn match apdlFunction display "/graphics\>" contained
+syn match apdlFunction display "/gresume\>" contained
+syn match apdlFunction display "/grid\>" contained
+syn match apdlFunction display "/gropt\>" contained
+syn match apdlFunction display "grp\>" contained
+syn match apdlFunction display "/grtyp\>" contained
+syn match apdlFunction display "/gsave\>" contained
+syn match apdlFunction display "/gst\>" contained
+syn match apdlFunction display "gsum\>" contained
+syn match apdlFunction display "/gthk\>" contained
+syn match apdlFunction display "harfrq\>" contained
+syn match apdlFunction display "/header\>" contained
+syn match apdlFunction display "help\>" contained
+syn match apdlFunction display "helpdisp\>" contained
+syn match apdlFunction display "hemiopt\>" contained
+syn match apdlFunction display "hfeigopt\>" contained
+syn match apdlFunction display "hfnear\>" contained
+syn match apdlFunction display "hfport\>" contained
+syn match apdlFunction display "hfscat\>" contained
+syn match apdlFunction display "hfsweep\>" contained
+syn match apdlFunction display "hfsym\>" contained
+syn match apdlFunction display "hmagsolv\>" contained
+syn match apdlFunction display "hpgl\>" contained
+syn match apdlFunction display "hptcreate\>" contained
+syn match apdlFunction display "hptdelete\>" contained
+syn match apdlFunction display "hrexp\>" contained
+syn match apdlFunction display "hropt\>" contained
+syn match apdlFunction display "hrout\>" contained
+syn match apdlFunction display "ic\>" contained
+syn match apdlFunction display "icdele\>" contained
+syn match apdlFunction display "ice\>" contained
+syn match apdlFunction display "icedele\>" contained
+syn match apdlFunction display "icelist\>" contained
+syn match apdlFunction display "iclist\>" contained
+syn match apdlFunction display "/iclwid\>" contained
+syn match apdlFunction display "/icscale\>" contained
+syn match apdlFunction display "icvfrc\>" contained
+syn match apdlFunction display "igesin\>" contained
+syn match apdlFunction display "igesout\>" contained
+syn match apdlFunction display "imagin\>" contained
+syn match apdlFunction display "immed\>" contained
+syn match apdlFunction display "impd\>" contained
+syn match apdlFunction display "/input\>" contained
+syn match apdlFunction display "inres\>" contained
+syn match apdlFunction display "inrtia\>" contained
+syn match apdlFunction display "int1\>" contained
+syn match apdlFunction display "intsrf\>" contained
+syn match apdlFunction display "ioptn\>" contained
+syn match apdlFunction display "irlf\>" contained
+syn match apdlFunction display "irlist\>" contained
+syn match apdlFunction display "isfile\>" contained
+syn match apdlFunction display "jpeg\>" contained
+syn match apdlFunction display "k\>" contained
+syn match apdlFunction display "katt\>" contained
+syn match apdlFunction display "kbc\>" contained
+syn match apdlFunction display "kbetw\>" contained
+syn match apdlFunction display "kcalc\>" contained
+syn match apdlFunction display "kcenter\>" contained
+syn match apdlFunction display "kclear\>" contained
+syn match apdlFunction display "kdele\>" contained
+syn match apdlFunction display "kdist\>" contained
+syn match apdlFunction display "kesize\>" contained
+syn match apdlFunction display "keyopt\>" contained
+syn match apdlFunction display "keypts\>" contained
+syn match apdlFunction display "keyw\>" contained
+syn match apdlFunction display "kfill\>" contained
+syn match apdlFunction display "kgen\>" contained
+syn match apdlFunction display "kl\>" contained
+syn match apdlFunction display "klist\>" contained
+syn match apdlFunction display "kmesh\>" contained
+syn match apdlFunction display "kmodif\>" contained
+syn match apdlFunction display "kmove\>" contained
+syn match apdlFunction display "knode\>" contained
+syn match apdlFunction display "kplot\>" contained
+syn match apdlFunction display "kpscale\>" contained
+syn match apdlFunction display "krefine\>" contained
+syn match apdlFunction display "kscale\>" contained
+syn match apdlFunction display "kscon\>" contained
+syn match apdlFunction display "ksll\>" contained
+syn match apdlFunction display "ksln\>" contained
+syn match apdlFunction display "ksum\>" contained
+syn match apdlFunction display "ksymm\>" contained
+syn match apdlFunction display "ktran\>" contained
+syn match apdlFunction display "kuse\>" contained
+syn match apdlFunction display "kwpave\>" contained
+syn match apdlFunction display "kwplan\>" contained
+syn match apdlFunction display "l\>" contained
+syn match apdlFunction display "l2ang\>" contained
+syn match apdlFunction display "l2tan\>" contained
+syn match apdlFunction display "lang\>" contained
+syn match apdlFunction display "/larc\>" contained
+syn match apdlFunction display "larc\>" contained
+syn match apdlFunction display "larea\>" contained
+syn match apdlFunction display "large\>" contained
+syn match apdlFunction display "latt\>" contained
+syn match apdlFunction display "layer\>" contained
+syn match apdlFunction display "layerp26\>" contained
+syn match apdlFunction display "laylist\>" contained
+syn match apdlFunction display "layplot\>" contained
+syn match apdlFunction display "lcabs\>" contained
+syn match apdlFunction display "lcase\>" contained
+syn match apdlFunction display "lccalc\>" contained
+syn match apdlFunction display "lccat\>" contained
+syn match apdlFunction display "lcdef\>" contained
+syn match apdlFunction display "lcfact\>" contained
+syn match apdlFunction display "lcfile\>" contained
+syn match apdlFunction display "lclear\>" contained
+syn match apdlFunction display "lcomb\>" contained
+syn match apdlFunction display "lcoper\>" contained
+syn match apdlFunction display "lcsel\>" contained
+syn match apdlFunction display "lcsl\>" contained
+syn match apdlFunction display "lcsum\>" contained
+syn match apdlFunction display "lcwrite\>" contained
+syn match apdlFunction display "lczero\>" contained
+syn match apdlFunction display "ldele\>" contained
+syn match apdlFunction display "ldiv\>" contained
+syn match apdlFunction display "ldrag\>" contained
+syn match apdlFunction display "ldread\>" contained
+syn match apdlFunction display "lesize\>" contained
+syn match apdlFunction display "lextnd\>" contained
+syn match apdlFunction display "lfillt\>" contained
+syn match apdlFunction display "lfsurf\>" contained
+syn match apdlFunction display "lgen\>" contained
+syn match apdlFunction display "lglue\>" contained
+syn match apdlFunction display "lgwrite\>" contained
+syn match apdlFunction display "/light\>" contained
+syn match apdlFunction display "lina\>" contained
+syn match apdlFunction display "/line\>" contained
+syn match apdlFunction display "line\>" contained
+syn match apdlFunction display "lines\>" contained
+syn match apdlFunction display "linl\>" contained
+syn match apdlFunction display "linp\>" contained
+syn match apdlFunction display "linv\>" contained
+syn match apdlFunction display "\*list\>" contained
+syn match apdlFunction display "list\>" contained
+syn match apdlFunction display "llist\>" contained
+syn match apdlFunction display "lmatrix\>" contained
+syn match apdlFunction display "lmesh\>" contained
+syn match apdlFunction display "lncollapse\>" contained
+syn match apdlFunction display "lndetach\>" contained
+syn match apdlFunction display "lnfill\>" contained
+syn match apdlFunction display "lnmerge\>" contained
+syn match apdlFunction display "lnsplit\>" contained
+syn match apdlFunction display "lnsrch\>" contained
+syn match apdlFunction display "local\>" contained
+syn match apdlFunction display "lovlap\>" contained
+syn match apdlFunction display "lplot\>" contained
+syn match apdlFunction display "lptn\>" contained
+syn match apdlFunction display "lrefine\>" contained
+syn match apdlFunction display "lreverse\>" contained
+syn match apdlFunction display "lrotat\>" contained
+syn match apdlFunction display "lsba\>" contained
+syn match apdlFunction display "lsbl\>" contained
+syn match apdlFunction display "lsbv\>" contained
+syn match apdlFunction display "lsbw\>" contained
+syn match apdlFunction display "lsclear\>" contained
+syn match apdlFunction display "lsdele\>" contained
+syn match apdlFunction display "lsla\>" contained
+syn match apdlFunction display "lslk\>" contained
+syn match apdlFunction display "lsoper\>" contained
+syn match apdlFunction display "/lspec\>" contained
+syn match apdlFunction display "lsread\>" contained
+syn match apdlFunction display "lsscale\>" contained
+syn match apdlFunction display "lssolve\>" contained
+syn match apdlFunction display "lstr\>" contained
+syn match apdlFunction display "lsum\>" contained
+syn match apdlFunction display "lswrite\>" contained
+syn match apdlFunction display "/lsymbol\>" contained
+syn match apdlFunction display "lsymm\>" contained
+syn match apdlFunction display "ltan\>" contained
+syn match apdlFunction display "ltran\>" contained
+syn match apdlFunction display "lumpm\>" contained
+syn match apdlFunction display "lvscale\>" contained
+syn match apdlFunction display "lwplan\>" contained
+syn match apdlFunction display "m\>" contained
+syn match apdlFunction display "magopt\>" contained
+syn match apdlFunction display "magsolv\>" contained
+syn match apdlFunction display "master\>" contained
+syn match apdlFunction display "mat\>" contained
+syn match apdlFunction display "mater\>" contained
+syn match apdlFunction display "mcheck\>" contained
+syn match apdlFunction display "mdamp\>" contained
+syn match apdlFunction display "mdele\>" contained
+syn match apdlFunction display "memm\>" contained
+syn match apdlFunction display "/menu\>" contained
+syn match apdlFunction display "meshing\>" contained
+syn match apdlFunction display "\*mfouri\>" contained
+syn match apdlFunction display "\*mfun\>" contained
+syn match apdlFunction display "mgen\>" contained
+syn match apdlFunction display "miter\>" contained
+syn match apdlFunction display "mlist\>" contained
+syn match apdlFunction display "mmf\>" contained
+syn match apdlFunction display "mode\>" contained
+syn match apdlFunction display "modmsh\>" contained
+syn match apdlFunction display "modopt\>" contained
+syn match apdlFunction display "monitor\>" contained
+syn match apdlFunction display "\*mooney\>" contained
+syn match apdlFunction display "\*moper\>" contained
+syn match apdlFunction display "mopt\>" contained
+syn match apdlFunction display "move\>" contained
+syn match apdlFunction display "mp\>" contained
+syn match apdlFunction display "mpamod\>" contained
+syn match apdlFunction display "mpchg\>" contained
+syn match apdlFunction display "mpcopy\>" contained
+syn match apdlFunction display "mpdata\>" contained
+syn match apdlFunction display "mpdele\>" contained
+syn match apdlFunction display "mpdres\>" contained
+syn match apdlFunction display "/mplib\>" contained
+syn match apdlFunction display "mplist\>" contained
+syn match apdlFunction display "mpmod\>" contained
+syn match apdlFunction display "mpplot\>" contained
+syn match apdlFunction display "mpread\>" contained
+syn match apdlFunction display "mprint\>" contained
+syn match apdlFunction display "mptemp\>" contained
+syn match apdlFunction display "mptgen\>" contained
+syn match apdlFunction display "mptres\>" contained
+syn match apdlFunction display "mpundo\>" contained
+syn match apdlFunction display "mpwrite\>" contained
+syn match apdlFunction display "/mrep\>" contained
+syn match apdlFunction display "msadv\>" contained
+syn match apdlFunction display "msave\>" contained
+syn match apdlFunction display "mscap\>" contained
+syn match apdlFunction display "msdata\>" contained
+syn match apdlFunction display "mshape\>" contained
+syn match apdlFunction display "mshcopy\>" contained
+syn match apdlFunction display "mshkey\>" contained
+syn match apdlFunction display "mshmid\>" contained
+syn match apdlFunction display "mshpattern\>" contained
+syn match apdlFunction display "msmeth\>" contained
+syn match apdlFunction display "msmir\>" contained
+syn match apdlFunction display "msnomf\>" contained
+syn match apdlFunction display "msprop\>" contained
+syn match apdlFunction display "msquad\>" contained
+syn match apdlFunction display "msrelax\>" contained
+syn match apdlFunction display "mssolu\>" contained
+syn match apdlFunction display "msspec\>" contained
+syn match apdlFunction display "/mstart\>" contained
+syn match apdlFunction display "msterm\>" contained
+syn match apdlFunction display "msvary\>" contained
+syn match apdlFunction display "mxpand\>" contained
+syn match apdlFunction display "n\>" contained
+syn match apdlFunction display "nang\>" contained
+syn match apdlFunction display "ncnv\>" contained
+syn match apdlFunction display "ndele\>" contained
+syn match apdlFunction display "ndist\>" contained
+syn match apdlFunction display "ndsurf\>" contained
+syn match apdlFunction display "neqit\>" contained
+syn match apdlFunction display "/nerr\>" contained
+syn match apdlFunction display "nforce\>" contained
+syn match apdlFunction display "ngen\>" contained
+syn match apdlFunction display "nkpt\>" contained
+syn match apdlFunction display "nlgeom\>" contained
+syn match apdlFunction display "nlist\>" contained
+syn match apdlFunction display "nlog\>" contained
+syn match apdlFunction display "nlopt\>" contained
+syn match apdlFunction display "nmodif\>" contained
+syn match apdlFunction display "nocolor\>" contained
+syn match apdlFunction display "nodes\>" contained
+syn match apdlFunction display "/noerase\>" contained
+syn match apdlFunction display "/nolist\>" contained
+syn match apdlFunction display "noorder\>" contained
+syn match apdlFunction display "/nopr\>" contained
+syn match apdlFunction display "/normal\>" contained
+syn match apdlFunction display "nplot\>" contained
+syn match apdlFunction display "nprint\>" contained
+syn match apdlFunction display "nread\>" contained
+syn match apdlFunction display "nrefine\>" contained
+syn match apdlFunction display "nrlsum\>" contained
+syn match apdlFunction display "nropt\>" contained
+syn match apdlFunction display "nrotat\>" contained
+syn match apdlFunction display "nrrang\>" contained
+syn match apdlFunction display "nscale\>" contained
+syn match apdlFunction display "nsla\>" contained
+syn match apdlFunction display "nsle\>" contained
+syn match apdlFunction display "nslk\>" contained
+syn match apdlFunction display "nsll\>" contained
+syn match apdlFunction display "nslv\>" contained
+syn match apdlFunction display "nsmooth\>" contained
+syn match apdlFunction display "nsol\>" contained
+syn match apdlFunction display "nsort\>" contained
+syn match apdlFunction display "nstore\>" contained
+syn match apdlFunction display "nsubst\>" contained
+syn match apdlFunction display "nsvr\>" contained
+syn match apdlFunction display "nsym\>" contained
+syn match apdlFunction display "/number\>" contained
+syn match apdlFunction display "numcmp\>" contained
+syn match apdlFunction display "numexp\>" contained
+syn match apdlFunction display "nummrg\>" contained
+syn match apdlFunction display "numoff\>" contained
+syn match apdlFunction display "numstr\>" contained
+syn match apdlFunction display "numvar\>" contained
+syn match apdlFunction display "nusort\>" contained
+syn match apdlFunction display "nwpave\>" contained
+syn match apdlFunction display "nwplan\>" contained
+syn match apdlFunction display "nwrite\>" contained
+syn match apdlFunction display "omega\>" contained
+syn match apdlFunction display "opadd\>" contained
+syn match apdlFunction display "opanl\>" contained
+syn match apdlFunction display "opclr\>" contained
+syn match apdlFunction display "opdata\>" contained
+syn match apdlFunction display "opdel\>" contained
+syn match apdlFunction display "opeqn\>" contained
+syn match apdlFunction display "operate\>" contained
+syn match apdlFunction display "opexe\>" contained
+syn match apdlFunction display "opfact\>" contained
+syn match apdlFunction display "opfrst\>" contained
+syn match apdlFunction display "opgrad\>" contained
+syn match apdlFunction display "opkeep\>" contained
+syn match apdlFunction display "oplfa\>" contained
+syn match apdlFunction display "oplgr\>" contained
+syn match apdlFunction display "oplist\>" contained
+syn match apdlFunction display "oploop\>" contained
+syn match apdlFunction display "oplsw\>" contained
+syn match apdlFunction display "opmake\>" contained
+syn match apdlFunction display "opncontrol\>" contained
+syn match apdlFunction display "opprnt\>" contained
+syn match apdlFunction display "oprand\>" contained
+syn match apdlFunction display "opresu\>" contained
+syn match apdlFunction display "oprfa\>" contained
+syn match apdlFunction display "oprgr\>" contained
+syn match apdlFunction display "oprsw\>" contained
+syn match apdlFunction display "opsave\>" contained
+syn match apdlFunction display "opsel\>" contained
+syn match apdlFunction display "opsubp\>" contained
+syn match apdlFunction display "opsweep\>" contained
+syn match apdlFunction display "optype\>" contained
+syn match apdlFunction display "opuser\>" contained
+syn match apdlFunction display "opvar\>" contained
+syn match apdlFunction display "outopt\>" contained
+syn match apdlFunction display "outpr\>" contained
+syn match apdlFunction display "/output\>" contained
+syn match apdlFunction display "outres\>" contained
+syn match apdlFunction display "padele\>" contained
+syn match apdlFunction display "/page\>" contained
+syn match apdlFunction display "paget\>" contained
+syn match apdlFunction display "paput\>" contained
+syn match apdlFunction display "parres\>" contained
+syn match apdlFunction display "parsav\>" contained
+syn match apdlFunction display "partsel\>" contained
+syn match apdlFunction display "path\>" contained
+syn match apdlFunction display "/pbc\>" contained
+syn match apdlFunction display "/pbf\>" contained
+syn match apdlFunction display "pcalc\>" contained
+syn match apdlFunction display "pcirc\>" contained
+syn match apdlFunction display "/pcircle\>" contained
+syn match apdlFunction display "pconv\>" contained
+syn match apdlFunction display "/pcopy\>" contained
+syn match apdlFunction display "pcorro\>" contained
+syn match apdlFunction display "pcross\>" contained
+syn match apdlFunction display "pdanl\>" contained
+syn match apdlFunction display "pdbbm\>" contained
+syn match apdlFunction display "pdccd\>" contained
+syn match apdlFunction display "pdcdf\>" contained
+syn match apdlFunction display "pdclr\>" contained
+syn match apdlFunction display "pdcmat\>" contained
+syn match apdlFunction display "pdcorr\>" contained
+syn match apdlFunction display "pddmcs\>" contained
+syn match apdlFunction display "pdef\>" contained
+syn match apdlFunction display "pdexe\>" contained
+syn match apdlFunction display "pdhist\>" contained
+syn match apdlFunction display "pdinqr\>" contained
+syn match apdlFunction display "pdmeth\>" contained
+syn match apdlFunction display "pdot\>" contained
+syn match apdlFunction display "pdpinv\>" contained
+syn match apdlFunction display "pdplot\>" contained
+syn match apdlFunction display "pdprob\>" contained
+syn match apdlFunction display "pdrag\>" contained
+syn match apdlFunction display "pdresu\>" contained
+syn match apdlFunction display "pdropt\>" contained
+syn match apdlFunction display "/pds\>" contained
+syn match apdlFunction display "pdsave\>" contained
+syn match apdlFunction display "pdscat\>" contained
+syn match apdlFunction display "pdsens\>" contained
+syn match apdlFunction display "pdshis\>" contained
+syn match apdlFunction display "pduser\>" contained
+syn match apdlFunction display "pdvar\>" contained
+syn match apdlFunction display "pdwrite\>" contained
+syn match apdlFunction display "pemopts\>" contained
+syn match apdlFunction display "perbc2d\>" contained
+syn match apdlFunction display "pexclude\>" contained
+syn match apdlFunction display "pfact\>" contained
+syn match apdlFunction display "pfluid\>" contained
+syn match apdlFunction display "pgap\>" contained
+syn match apdlFunction display "physics\>" contained
+syn match apdlFunction display "/pice\>" contained
+syn match apdlFunction display "pinclude\>" contained
+syn match apdlFunction display "pinsul\>" contained
+syn match apdlFunction display "pipe\>" contained
+syn match apdlFunction display "plconv\>" contained
+syn match apdlFunction display "plcplx\>" contained
+syn match apdlFunction display "plcrack\>" contained
+syn match apdlFunction display "pldisp\>" contained
+syn match apdlFunction display "plesol\>" contained
+syn match apdlFunction display "pletab\>" contained
+syn match apdlFunction display "plf2d\>" contained
+syn match apdlFunction display "plhffar\>" contained
+syn match apdlFunction display "plls\>" contained
+syn match apdlFunction display "plnsol\>" contained
+syn match apdlFunction display "/plopts\>" contained
+syn match apdlFunction display "plot\>" contained
+syn match apdlFunction display "plotting\>" contained
+syn match apdlFunction display "plpagm\>" contained
+syn match apdlFunction display "plpath\>" contained
+syn match apdlFunction display "plsect\>" contained
+syn match apdlFunction display "pltime\>" contained
+syn match apdlFunction display "pltrac\>" contained
+syn match apdlFunction display "plvar\>" contained
+syn match apdlFunction display "plvaropt\>" contained
+syn match apdlFunction display "plvect\>" contained
+syn match apdlFunction display "plvfrc\>" contained
+syn match apdlFunction display "plwave\>" contained
+syn match apdlFunction display "/pmacro\>" contained
+syn match apdlFunction display "pmap\>" contained
+syn match apdlFunction display "/pmeth\>" contained
+syn match apdlFunction display "pmeth\>" contained
+syn match apdlFunction display "pmgtran\>" contained
+syn match apdlFunction display "pmlopt\>" contained
+syn match apdlFunction display "pmopts\>" contained
+syn match apdlFunction display "/pmore\>" contained
+syn match apdlFunction display "/pnum\>" contained
+syn match apdlFunction display "point\>" contained
+syn match apdlFunction display "poly\>" contained
+syn match apdlFunction display "/polygon\>" contained
+syn match apdlFunction display "popt\>" contained
+syn match apdlFunction display "powerh\>" contained
+syn match apdlFunction display "ppath\>" contained
+syn match apdlFunction display "pplot\>" contained
+syn match apdlFunction display "pprange\>" contained
+syn match apdlFunction display "ppres\>" contained
+syn match apdlFunction display "prange\>" contained
+syn match apdlFunction display "prconv\>" contained
+syn match apdlFunction display "prcplx\>" contained
+syn match apdlFunction display "precision\>" contained
+syn match apdlFunction display "pred\>" contained
+syn match apdlFunction display "prerr\>" contained
+syn match apdlFunction display "presol\>" contained
+syn match apdlFunction display "pretab\>" contained
+syn match apdlFunction display "prets179\>" contained
+syn match apdlFunction display "prhffar\>" contained
+syn match apdlFunction display "pri2\>" contained
+syn match apdlFunction display "prim\>" contained
+syn match apdlFunction display "print\>" contained
+syn match apdlFunction display "prism\>" contained
+syn match apdlFunction display "priter\>" contained
+syn match apdlFunction display "prnld\>" contained
+syn match apdlFunction display "prnsol\>" contained
+syn match apdlFunction display "prod\>" contained
+syn match apdlFunction display "prpath\>" contained
+syn match apdlFunction display "prrsol\>" contained
+syn match apdlFunction display "prsect\>" contained
+syn match apdlFunction display "prtime\>" contained
+syn match apdlFunction display "prvar\>" contained
+syn match apdlFunction display "prvaropt\>" contained
+syn match apdlFunction display "prvect\>" contained
+syn match apdlFunction display "pscr\>" contained
+syn match apdlFunction display "psdcom\>" contained
+syn match apdlFunction display "psdfrq\>" contained
+syn match apdlFunction display "psdgraph\>" contained
+syn match apdlFunction display "psdres\>" contained
+syn match apdlFunction display "psdspl\>" contained
+syn match apdlFunction display "psdunit\>" contained
+syn match apdlFunction display "psdval\>" contained
+syn match apdlFunction display "psdwav\>" contained
+syn match apdlFunction display "/psearch\>" contained
+syn match apdlFunction display "/psf\>" contained
+syn match apdlFunction display "psmesh\>" contained
+syn match apdlFunction display "psolve\>" contained
+syn match apdlFunction display "/pspec\>" contained
+syn match apdlFunction display "pspec\>" contained
+syn match apdlFunction display "psprng\>" contained
+syn match apdlFunction display "/pstatus\>" contained
+syn match apdlFunction display "pstres\>" contained
+syn match apdlFunction display "/psymb\>" contained
+syn match apdlFunction display "ptemp\>" contained
+syn match apdlFunction display "ptxy\>" contained
+syn match apdlFunction display "punit\>" contained
+syn match apdlFunction display "pvect\>" contained
+syn match apdlFunction display "/pwedge\>" contained
+syn match apdlFunction display "qdval\>" contained
+syn match apdlFunction display "qfact\>" contained
+syn match apdlFunction display "qsopt\>" contained
+syn match apdlFunction display "quad\>" contained
+syn match apdlFunction display "quot\>" contained
+syn match apdlFunction display "r\>" contained
+syn match apdlFunction display "race\>" contained
+syn match apdlFunction display "radopt\>" contained
+syn match apdlFunction display "rall\>" contained
+syn match apdlFunction display "rappnd\>" contained
+syn match apdlFunction display "rate\>" contained
+syn match apdlFunction display "/ratio\>" contained
+syn match apdlFunction display "rbe3\>" contained
+syn match apdlFunction display "rcon\>" contained
+syn match apdlFunction display "rdele\>" contained
+syn match apdlFunction display "real\>" contained
+syn match apdlFunction display "realvar\>" contained
+syn match apdlFunction display "rectng\>" contained
+syn match apdlFunction display "reduce\>" contained
+syn match apdlFunction display "reflcoef\>" contained
+syn match apdlFunction display "/rename\>" contained
+syn match apdlFunction display "reorder\>" contained
+syn match apdlFunction display "/replot\>" contained
+syn match apdlFunction display "rescontrol\>" contained
+syn match apdlFunction display "/reset\>" contained
+syn match apdlFunction display "reset\>" contained
+syn match apdlFunction display "resp\>" contained
+syn match apdlFunction display "resume\>" contained
+syn match apdlFunction display "rexport\>" contained
+syn match apdlFunction display "rfilsz\>" contained
+syn match apdlFunction display "rforce\>" contained
+syn match apdlFunction display "/rgb\>" contained
+syn match apdlFunction display "rigid\>" contained
+syn match apdlFunction display "rimport\>" contained
+syn match apdlFunction display "riter\>" contained
+syn match apdlFunction display "rlist\>" contained
+syn match apdlFunction display "rmemry\>" contained
+syn match apdlFunction display "rmodif\>" contained
+syn match apdlFunction display "rmore\>" contained
+syn match apdlFunction display "rock\>" contained
+syn match apdlFunction display "rpoly\>" contained
+syn match apdlFunction display "rpr4\>" contained
+syn match apdlFunction display "rprism\>" contained
+syn match apdlFunction display "rpsd\>" contained
+syn match apdlFunction display "rsfit\>" contained
+syn match apdlFunction display "rspeed\>" contained
+syn match apdlFunction display "rsplot\>" contained
+syn match apdlFunction display "rsprnt\>" contained
+syn match apdlFunction display "rssims\>" contained
+syn match apdlFunction display "rstat\>" contained
+syn match apdlFunction display "rsys\>" contained
+syn match apdlFunction display "rthick\>" contained
+syn match apdlFunction display "rtimst\>" contained
+syn match apdlFunction display "run\>" contained
+syn match apdlFunction display "rwfrnt\>" contained
+syn match apdlFunction display "sabs\>" contained
+syn match apdlFunction display "sadd\>" contained
+syn match apdlFunction display "sallow\>" contained
+syn match apdlFunction display "sarplot\>" contained
+syn match apdlFunction display "save\>" contained
+syn match apdlFunction display "sbclist\>" contained
+syn match apdlFunction display "sbctran\>" contained
+syn match apdlFunction display "sdelete\>" contained
+syn match apdlFunction display "se\>" contained
+syn match apdlFunction display "secdata\>" contained
+syn match apdlFunction display "secnum\>" contained
+syn match apdlFunction display "secoffset\>" contained
+syn match apdlFunction display "secplot\>" contained
+syn match apdlFunction display "secread\>" contained
+syn match apdlFunction display "sectype\>" contained
+syn match apdlFunction display "secwrite\>" contained
+syn match apdlFunction display "sed\>" contained
+syn match apdlFunction display "sedlist\>" contained
+syn match apdlFunction display "seexp\>" contained
+syn match apdlFunction display "/seg\>" contained
+syn match apdlFunction display "selist\>" contained
+syn match apdlFunction display "selm\>" contained
+syn match apdlFunction display "senergy\>" contained
+syn match apdlFunction display "seopt\>" contained
+syn match apdlFunction display "sesymm\>" contained
+syn match apdlFunction display "\*set\>" contained
+syn match apdlFunction display "set\>" contained
+syn match apdlFunction display "setran\>" contained
+syn match apdlFunction display "sexp\>" contained
+syn match apdlFunction display "sf\>" contained
+syn match apdlFunction display "sfa\>" contained
+syn match apdlFunction display "sfact\>" contained
+syn match apdlFunction display "sfadele\>" contained
+syn match apdlFunction display "sfalist\>" contained
+syn match apdlFunction display "sfbeam\>" contained
+syn match apdlFunction display "sfcalc\>" contained
+syn match apdlFunction display "sfcum\>" contained
+syn match apdlFunction display "sfdele\>" contained
+syn match apdlFunction display "sfe\>" contained
+syn match apdlFunction display "sfedele\>" contained
+syn match apdlFunction display "sfelist\>" contained
+syn match apdlFunction display "sffun\>" contained
+syn match apdlFunction display "sfgrad\>" contained
+syn match apdlFunction display "sfl\>" contained
+syn match apdlFunction display "sfldele\>" contained
+syn match apdlFunction display "sflist\>" contained
+syn match apdlFunction display "sfllist\>" contained
+syn match apdlFunction display "sfscale\>" contained
+syn match apdlFunction display "sftran\>" contained
+syn match apdlFunction display "/shade\>" contained
+syn match apdlFunction display "shell\>" contained
+syn match apdlFunction display "/showdisp\>" contained
+syn match apdlFunction display "/shrink\>" contained
+syn match apdlFunction display "slist\>" contained
+syn match apdlFunction display "slpplot\>" contained
+syn match apdlFunction display "slsplot\>" contained
+syn match apdlFunction display "small\>" contained
+syn match apdlFunction display "smax\>" contained
+syn match apdlFunction display "smbody\>" contained
+syn match apdlFunction display "smcons\>" contained
+syn match apdlFunction display "smfor\>" contained
+syn match apdlFunction display "smin\>" contained
+syn match apdlFunction display "smooth\>" contained
+syn match apdlFunction display "smrtsize\>" contained
+syn match apdlFunction display "smsurf\>" contained
+syn match apdlFunction display "smult\>" contained
+syn match apdlFunction display "solcontrol\>" contained
+syn match apdlFunction display "solu\>" contained
+syn match apdlFunction display "soluopt\>" contained
+syn match apdlFunction display "solve\>" contained
+syn match apdlFunction display "sort\>" contained
+syn match apdlFunction display "source\>" contained
+syn match apdlFunction display "space\>" contained
+syn match apdlFunction display "sparm\>" contained
+syn match apdlFunction display "spcnod\>" contained
+syn match apdlFunction display "spctemp\>" contained
+syn match apdlFunction display "spec\>" contained
+syn match apdlFunction display "sph4\>" contained
+syn match apdlFunction display "sph5\>" contained
+syn match apdlFunction display "sphere\>" contained
+syn match apdlFunction display "spline\>" contained
+syn match apdlFunction display "spoint\>" contained
+syn match apdlFunction display "spopt\>" contained
+syn match apdlFunction display "spread\>" contained
+syn match apdlFunction display "sptopt\>" contained
+syn match apdlFunction display "sqrt\>" contained
+syn match apdlFunction display "srss\>" contained
+syn match apdlFunction display "/sscale\>" contained
+syn match apdlFunction display "ssln\>" contained
+syn match apdlFunction display "sstif\>" contained
+syn match apdlFunction display "ssum\>" contained
+syn match apdlFunction display "stat\>" contained
+syn match apdlFunction display "/status\>" contained
+syn match apdlFunction display "\*status\>" contained
+syn match apdlFunction display "stef\>" contained
+syn match apdlFunction display "/stitle\>" contained
+syn match apdlFunction display "store\>" contained
+syn match apdlFunction display "subopt\>" contained
+syn match apdlFunction display "subset\>" contained
+syn match apdlFunction display "sumtype\>" contained
+syn match apdlFunction display "sv\>" contained
+syn match apdlFunction display "svtyp\>" contained
+syn match apdlFunction display "/syp\>" contained
+syn match apdlFunction display "/sys\>" contained
+syn match apdlFunction display "tallow\>" contained
+syn match apdlFunction display "tb\>" contained
+syn match apdlFunction display "tbcopy\>" contained
+syn match apdlFunction display "tbdata\>" contained
+syn match apdlFunction display "tbdele\>" contained
+syn match apdlFunction display "tble\>" contained
+syn match apdlFunction display "tblist\>" contained
+syn match apdlFunction display "tbmodif\>" contained
+syn match apdlFunction display "tbplot\>" contained
+syn match apdlFunction display "tbpt\>" contained
+syn match apdlFunction display "tbtemp\>" contained
+syn match apdlFunction display "tchg\>" contained
+syn match apdlFunction display "/tee\>" contained
+syn match apdlFunction display "tee\>" contained
+syn match apdlFunction display "term\>" contained
+syn match apdlFunction display "tiff\>" contained
+syn match apdlFunction display "time\>" contained
+syn match apdlFunction display "timerange\>" contained
+syn match apdlFunction display "timint\>" contained
+syn match apdlFunction display "timp\>" contained
+syn match apdlFunction display "tintp\>" contained
+syn match apdlFunction display "/title\>" contained
+syn match apdlFunction display "/tlabel\>" contained
+syn match apdlFunction display "tocomp\>" contained
+syn match apdlFunction display "todef\>" contained
+syn match apdlFunction display "toexe\>" contained
+syn match apdlFunction display "toffst\>" contained
+syn match apdlFunction display "tofreq\>" contained
+syn match apdlFunction display "tograph\>" contained
+syn match apdlFunction display "tolist\>" contained
+syn match apdlFunction display "toloop\>" contained
+syn match apdlFunction display "\*toper\>" contained
+syn match apdlFunction display "toplot\>" contained
+syn match apdlFunction display "toprint\>" contained
+syn match apdlFunction display "torq2d\>" contained
+syn match apdlFunction display "torqc2d\>" contained
+syn match apdlFunction display "torqsum\>" contained
+syn match apdlFunction display "torus\>" contained
+syn match apdlFunction display "tostat\>" contained
+syn match apdlFunction display "total\>" contained
+syn match apdlFunction display "totype\>" contained
+syn match apdlFunction display "tovar\>" contained
+syn match apdlFunction display "trans\>" contained
+syn match apdlFunction display "transfer\>" contained
+syn match apdlFunction display "\*tread\>" contained
+syn match apdlFunction display "tref\>" contained
+syn match apdlFunction display "/triad\>" contained
+syn match apdlFunction display "/trlcy\>" contained
+syn match apdlFunction display "trnopt\>" contained
+syn match apdlFunction display "trpdel\>" contained
+syn match apdlFunction display "trplis\>" contained
+syn match apdlFunction display "trpoin\>" contained
+syn match apdlFunction display "trtime\>" contained
+syn match apdlFunction display "tshap\>" contained
+syn match apdlFunction display "/tspec\>" contained
+syn match apdlFunction display "tsres\>" contained
+syn match apdlFunction display "tunif\>" contained
+syn match apdlFunction display "tvar\>" contained
+syn match apdlFunction display "/txtre\>" contained
+syn match apdlFunction display "/type\>" contained
+syn match apdlFunction display "type\>" contained
+syn match apdlFunction display "tzamesh\>" contained
+syn match apdlFunction display "tzdele\>" contained
+syn match apdlFunction display "tzegen\>" contained
+syn match apdlFunction display "/ucmd\>" contained
+syn match apdlFunction display "/ui\>" contained
+syn match apdlFunction display "uimp\>" contained
+syn match apdlFunction display "/uis\>" contained
+syn match apdlFunction display "\*ulib\>" contained
+syn match apdlFunction display "undelete\>" contained
+syn match apdlFunction display "undo\>" contained
+syn match apdlFunction display "/units\>" contained
+syn match apdlFunction display "upcoord\>" contained
+syn match apdlFunction display "upgeom\>" contained
+syn match apdlFunction display "\*use\>" contained
+syn match apdlFunction display "usrcal\>" contained
+syn match apdlFunction display "v\>" contained
+syn match apdlFunction display "v2dopt\>" contained
+syn match apdlFunction display "va\>" contained
+syn match apdlFunction display "\*vabs\>" contained
+syn match apdlFunction display "vadd\>" contained
+syn match apdlFunction display "valve\>" contained
+syn match apdlFunction display "vardel\>" contained
+syn match apdlFunction display "varnam\>" contained
+syn match apdlFunction display "vatt\>" contained
+syn match apdlFunction display "vclear\>" contained
+syn match apdlFunction display "\*vcol\>" contained
+syn match apdlFunction display "/vcone\>" contained
+syn match apdlFunction display "vcross\>" contained
+syn match apdlFunction display "\*vcum\>" contained
+syn match apdlFunction display "vcvfill\>" contained
+syn match apdlFunction display "vddam\>" contained
+syn match apdlFunction display "vdele\>" contained
+syn match apdlFunction display "vdgl\>" contained
+syn match apdlFunction display "vdot\>" contained
+syn match apdlFunction display "vdrag\>" contained
+syn match apdlFunction display "\*vedit\>" contained
+syn match apdlFunction display "vext\>" contained
+syn match apdlFunction display "\*vfact\>" contained
+syn match apdlFunction display "vfcalc\>" contained
+syn match apdlFunction display "\*vfill\>" contained
+syn match apdlFunction display "vfopt\>" contained
+syn match apdlFunction display "vfquery\>" contained
+syn match apdlFunction display "\*vfun\>" contained
+syn match apdlFunction display "vgen\>" contained
+syn match apdlFunction display "\*vget\>" contained
+syn match apdlFunction display "vget\>" contained
+syn match apdlFunction display "vglue\>" contained
+syn match apdlFunction display "/view\>" contained
+syn match apdlFunction display "vimp\>" contained
+syn match apdlFunction display "vinp\>" contained
+syn match apdlFunction display "vinv\>" contained
+syn match apdlFunction display "\*vitrp\>" contained
+syn match apdlFunction display "\*vlen\>" contained
+syn match apdlFunction display "vlist\>" contained
+syn match apdlFunction display "vlscale\>" contained
+syn match apdlFunction display "\*vmask\>" contained
+syn match apdlFunction display "vmesh\>" contained
+syn match apdlFunction display "voffst\>" contained
+syn match apdlFunction display "volumes\>" contained
+syn match apdlFunction display "\*voper\>" contained
+syn match apdlFunction display "vovlap\>" contained
+syn match apdlFunction display "\*vplot\>" contained
+syn match apdlFunction display "vplot\>" contained
+syn match apdlFunction display "vptn\>" contained
+syn match apdlFunction display "\*vput\>" contained
+syn match apdlFunction display "vput\>" contained
+syn match apdlFunction display "vrotat\>" contained
+syn match apdlFunction display "vsba\>" contained
+syn match apdlFunction display "vsbv\>" contained
+syn match apdlFunction display "vsbw\>" contained
+syn match apdlFunction display "/vscale\>" contained
+syn match apdlFunction display "\*vscfun\>" contained
+syn match apdlFunction display "vsla\>" contained
+syn match apdlFunction display "\*vstat\>" contained
+syn match apdlFunction display "vsum\>" contained
+syn match apdlFunction display "vsweep\>" contained
+syn match apdlFunction display "vsymm\>" contained
+syn match apdlFunction display "vtran\>" contained
+syn match apdlFunction display "vtype\>" contained
+syn match apdlFunction display "/vup\>" contained
+syn match apdlFunction display "/wait\>" contained
+syn match apdlFunction display "waves\>" contained
+syn match apdlFunction display "werase\>" contained
+syn match apdlFunction display "wfront\>" contained
+syn match apdlFunction display "/window\>" contained
+syn match apdlFunction display "wmore\>" contained
+syn match apdlFunction display "wpave\>" contained
+syn match apdlFunction display "wpcsys\>" contained
+syn match apdlFunction display "wplane\>" contained
+syn match apdlFunction display "wpoffs\>" contained
+syn match apdlFunction display "wprota\>" contained
+syn match apdlFunction display "wpstyl\>" contained
+syn match apdlFunction display "write\>" contained
+syn match apdlFunction display "wsort\>" contained
+syn match apdlFunction display "wstart\>" contained
+syn match apdlFunction display "/xfrm\>" contained
+syn match apdlFunction display "/xrange\>" contained
+syn match apdlFunction display "xvar\>" contained
+syn match apdlFunction display "xvaropt\>" contained
+syn match apdlFunction display "/yrange\>" contained
+syn match apdlFunction display "/zoom\>" contained
+
 "
 " End of autoextracted part.
 "
+" magic condition for Error display, must be first.
+"
+syn match apdlError display ".*$" contained
+
+" Commands that are missing in autoextracted file:
+syn match apdlFunction display "/cwd\>" contained
+syn match apdlFunction display "/show\>" contained
+
+" multiline commands
+syn match apdlStringLine ".*$" contained
+syn match apdlBeforeLine ".*\n" contained nextgroup=apdlStringLine transparent
+syn match apdlFunction "\*msg\>" contained nextgroup=apdlBeforeLine
+syn match apdlFunction "\*mwrite\>" contained nextgroup=apdlBeforeLine
+syn match apdlFunction "\*vread\>" contained nextgroup=apdlBeforeLine
+syn match apdlFunction "\*vwrite\>" contained nextgroup=apdlBeforeLine
+
+" Commands with parameter checking:
+" cm
+syn match apdlFunction display "cm\s*,"me=e-1 contained nextgroup=apdlError,apdlCm1Ok
+syn match apdlCm1Ok display ",\s*[a-zA-Z_][a-zA-Z0-9_]*\s*," contained transparent nextgroup=apdlError,apdlCm2Ok
+syn match apdlCm2Ok display "\s*\(volu\|area\|line\|kp\|elem\|node\)\>" contained transparent
+
+" Xsel
+syn match apdlFunction display "ksel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "lsel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "asel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "vsel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "esel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "nsel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlFunction display "cmsel\s*,"me=e-1 contained nextgroup=apdlError,apdlXsel1aOk,apdlXsel1bOk
+syn match apdlXsel1aOk display ",\s*\(s\|r\|a\|u\|inve\)\=\s*," contained transparent
+syn match apdlXsel1bOk display ",\s*\(all\|none\|stat\)" contained transparent
 
 " special apdl commands that should be highlighted seperately:
-syn match	apdlConditional	display	"\*if"
-syn match	apdlConditional	display	"\*elseif"
-syn match	apdlConditional	display	"\*else"
-syn match	apdlConditional	display	"\*endif"
-syn match	apdlRepeat	display "*do"
-syn match	apdlRepeat	display "*cycle"
-syn match	apdlRepeat	display "*exit"
-syn match	apdlRepeat	display "*enddo"
-syn match	apdlRepeat	display "*repeat"
+syn match	apdlConditional	display	"\*if\>" contained
+syn match	apdlConditional	display	"\*elseif\>" contained
+syn match	apdlConditional	display	"\*else\>" contained
+syn match	apdlRepeat	display "\*do\>" contained
+syn match	apdlRepeat	display "\*cycle\>" contained
+syn match	apdlRepeat	display "\*exit\>" contained
+syn match	apdlRepeat	display "\*enddo\>" contained
+syn match	apdlRepeat	display "\*repeat\>" contained
+syn match	apdlRepeat	display "\*go\>" contained
 
 " exceptional commands:
-syn match	apdlSpecial	display "/eof"
-syn match	apdlSpecial	display "/show"
-syn match	apdlSpecial	display "/exit"
-syn match	apdlSpecial	display "/quit"
-syn match	apdlSpecial	display "debug"
+syn match	apdlSpecial	display "/eof\>" contained
+syn match	apdlSpecial	display "/show\>" contained
+syn match	apdlSpecial	display "/exit\>" contained
+syn match	apdlSpecial	display "/quit\>" contained
+syn match	apdlSpecial	display "debug\>" contained
+
+" labels
+syn match	apdlLabel	display ":\s*[a-zA-Z_][a-zA-Z0-9_]*" contained 
 
 " apdl command groups
-syn match	apdlSpecial	display "/prep7"
-syn match	apdlSpecial	display "/solu"
-syn match	apdlSpecial	display "/post1"
-syn match	apdlSpecial	display "/post26"
-syn match	apdlSpecial	display "/opt"
-syn match	apdlSpecial	display "/runst"
-syn match	apdlSpecial	display "/aux2"
-syn match	apdlSpecial	display "/aux12"
-syn match	apdlSpecial	display "/aux15"
-syn match	apdlSpecial	display "finish"
+syn match	apdlSpecial	display "/prep7\>" contained
+syn match	apdlSpecial	display "/solu\>" contained
+syn match	apdlSpecial	display "/post1\>" contained
+syn match	apdlSpecial	display "/post26\>" contained
+syn match	apdlSpecial	display "/opt\>" contained
+syn match	apdlSpecial	display "/runst\>" contained
+syn match	apdlSpecial	display "/aux2\>" contained
+syn match	apdlSpecial	display "/aux12\>" contained
+syn match	apdlSpecial	display "/aux15\>" contained
+syn match	apdlSpecial	display "finish\>" contained
+syn match	apdlSpecial	display "\*create\>" contained
+syn match	apdlSpecial	display "\*end\>" contained
+
+" commands must be the first entry in a line or behind an $
+syn cluster	apdlToken contains=apdlSpecial,apdlRepeat,apdlConditional,apdlFunction,apdlLabel
+
+syn match	apdlStart1	"\$" nextgroup=@apdlToken skipwhite transparent
+syn match	apdlStart2	"^" nextgroup=@apdlToken skipwhite transparent
+
+" comment must be the last match, it has priority over apdlStart2
+syn keyword	apdlTodo	contained TODO FIXME XXX
+syn match	apdlComment	"!.*$" contains=apdlTodo
 
 syn case match
-
 " End of APDL specific part
+""""""""""""""""""""""""""""""""""""""""
 
 " Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
@@ -1507,6 +1457,10 @@ if version >= 508 || !exists("did_apdl_syntax_inits")
  HiLink apdlTodo	Todo
  HiLink apdlSpecial	Special
  HiLink apdlFunction	Function
+ HiLink apdlLabel	Label
+
+ HiLink apdlError	Error
+ HiLink apdlStringLine	String
 
  delcommand HiLink
 endif
