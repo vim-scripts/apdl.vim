@@ -31,7 +31,6 @@ endif
 " Numbers, allowing signs (both -, and +)
 " Integer number.
 syn match  apdlNumber		display "[+-]\=\<\d\+\>"
-
 " Floating point number.
 syn match  apdlFloat		display "[+-]\=\<\d\+\.\d+\>"
 " Floating point number, starting with a dot.
@@ -43,6 +42,12 @@ syn match  apdlFloat	display "\<\d\+\.\d*\(e[-+]\=\d\+\)\=\>"
 syn match  apdlFloat	display "\.\d\+\(e[-+]\=\d\+\)\=\>"
 "floating point number, without dot, with exponent
 syn match  apdlFloat	display "\<\d\+e[-+]\=\d\+\>"
+" Floating point like number with E and no decimal point (+,-)
+syn match apdlFloat  display "[-+]\=\d[[:digit:]]*[eE][\-+]\=\d\+"
+syn match apdlFloat  display "\d[[:digit:]]*[eE][\-+]\=\d\+"
+" Floating point like number with E and decimal point (+,-)
+syn match apdlFloat  display "[-+]\=\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+"
+syn match apdlFloat  display "\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+"
 syn case match
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1108,6 +1113,7 @@ syn match apdlFunction display "seexp\>" contained
 syn match apdlFunction display "/seg\>" contained
 syn match apdlFunction display "selist\>" contained
 syn match apdlFunction display "selm\>" contained
+syn match apdlFunction display "seltol\>" contained
 syn match apdlFunction display "senergy\>" contained
 syn match apdlFunction display "seopt\>" contained
 syn match apdlFunction display "sesymm\>" contained
@@ -1393,6 +1399,7 @@ syn match apdlXsel1bOk display ",\s*\(all\|none\|stat\)" contained transparent
 syn match	apdlConditional	display	"\*if\>" contained
 syn match	apdlConditional	display	"\*elseif\>" contained
 syn match	apdlConditional	display	"\*else\>" contained
+syn match	apdlConditional	display	"\*endif\>" contained
 syn match	apdlRepeat	display "\*do\>" contained
 syn match	apdlRepeat	display "\*cycle\>" contained
 syn match	apdlRepeat	display "\*exit\>" contained
