@@ -1,8 +1,9 @@
 " Vim syntax file
 " Language:		APDL
-" Maintainer:	Manfred Spraul <manfred@colorfullife.com>
-" Last Change:	2003 Jan 24
-" Version: 0.02
+" Creator:	Manfred Spraul <manfred@colorfullife.com>
+" Maintainer:	Cristóbal Tapia <crtapia at gmail dot com>
+" Last Change:	2014 Sept 26
+" Version: 0.03
 "
 " Note: The support for abreviated commands is intentionally missing.
 " 	Typical file names are *.ans and *.mac.
