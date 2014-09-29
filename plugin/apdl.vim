@@ -1,10 +1,18 @@
 let $PATH = $PATH . ';C:\Program Files (x86)\Mozilla Firefox'
+" define Ansys path
+let g:ansys_dir = 'C:/Program Files/ANSYS Inc/v150/'
 " Evoke a web browser
 function! Browser (cmd)
-    let ansys_dir = 'file:///C:/Program Files/ANSYS Inc/v150/commonfiles/help/en-us/help/ans_cmd/'
+    let a:ansys_cmd = g:ansys_dir . 'commonfiles/help/en-us/help/ans_cmd/'
+    let a:ansys_ele = g:ansys_dir . 'commonfiles/help/en-us/help/ans_elem/'
     let a:command = toupper(a:cmd)
-    let helpfile = g:apdl_cmd_dict[a:command]
-    exec ':silent !firefox.exe ' . "\"" . ansys_dir . helpfile . "\""
+    try
+        let helpfile = g:apdl_cmd_dict[a:command]
+        exec ':silent !firefox.exe ' . "\"" . 'file:///' . a:ansys_cmd . helpfile . "\""
+    catch
+        let helpfile = g:apdl_ele_dict[a:command]
+        exec ':silent !firefox.exe ' . "\"" . 'file:///' . a:ansys_ele . helpfile . "\""
+    endtry
 endfunction
 
 " Commands
