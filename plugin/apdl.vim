@@ -1,7 +1,8 @@
 let $PATH = $PATH . ';C:\Program Files (x86)\Mozilla Firefox'
 " define Ansys path
 let g:ansys_dir = 'C:/Program Files/ANSYS Inc/v150/'
-" Evoke a web browser
+" Initiate a web browser (firefox) and open the documentation for a specific
+" APDL-command
 function! Browser (cmd)
     let a:ansys_cmd = g:ansys_dir . 'commonfiles/help/en-us/help/ans_cmd/'
     let a:ansys_ele = g:ansys_dir . 'commonfiles/help/en-us/help/ans_elem/'
@@ -15,8 +16,33 @@ function! Browser (cmd)
     endtry
 endfunction
 
+" Function for autocompletion suggestions while calling the ApdlHelp command
+function! ApdlAutoComplete(ArgLead, CmdLine, CursorPos)
+    " everything to upper case
+    let a:word = toupper(a:ArgLead)
+    " count the number of letter to later get a substr to compare with
+    let a:num_letters = len(a:word)-1
+    " create a list from the dictionary of commands
+    let a:list_cmd = keys(g:apdl_cmd_dict)
+    " filter
+    return filter(copy(a:list_cmd), 'v:val[:a:num_letters] =~ a:word')
+endfunction
+"
+" Autocompletion function for the elements
+function! ApdlAutoCompleteElem(ArgLead, CmdLine, CursorPos)
+    " everything to upper case
+    let a:word = toupper(a:ArgLead)
+    " count the number of letter to later get a substr to compare with
+    let a:num_letters = len(a:word)-1
+    " create a list from the dictionary of commands
+    let a:list_ele = keys(g:apdl_ele_dict)
+    " filter
+    return filter(copy(a:list_ele), 'v:val[:a:num_letters] =~ a:word')
+endfunction
+
 " Commands
-command! -nargs=1 ApdlHelp :execute "call Browser(\"<args>\")"
+command! -nargs=1 -complete=customlist,ApdlAutoComplete ApdlCmdHelp :execute "call Browser(\"<args>\")"
+command! -nargs=1 -complete=customlist,ApdlAutoCompleteElem ApdlElemHelp :execute "call Browser(\"<args>\")"
 " mapping
 "nnoremap <leader>ap :execute "normal! viwy<cr>" . ":ApdlHelp <S-Insert>"<cr>
 
