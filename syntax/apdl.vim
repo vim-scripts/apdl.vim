@@ -369,7 +369,6 @@ syn match apdlFunction display "dof\>" contained
 syn match apdlFunction display "dofsel\>" contained
 syn match apdlFunction display "domega\>" contained
 syn match apdlFunction display "\*dot\>" contained
-syn match apdlFunction display "\*dowhile\>" contained
 syn match apdlFunction display "dscale\>" contained
 syn match apdlFunction display "/dscale\>" contained
 syn match apdlFunction display "dset\>" contained
@@ -1560,6 +1559,7 @@ syn match	apdlRepeat	display "\*exit\>" contained
 syn match	apdlRepeat	display "\*enddo\>" contained
 syn match	apdlRepeat	display "\*repeat\>" contained
 syn match	apdlRepeat	display "\*go\>" contained
+syn match   apdlRepeat  display "\*dowhile\>" contained
 
 " exceptional commands:
 syn match	apdlSpecial	display "/eof\>" contained

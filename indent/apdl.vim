@@ -31,7 +31,7 @@ function GetApdlIndent()
 
   let curind = indent(plnum)
   " Add a 'shiftwidth' after *if, *else, *elseif, *do, *create
-  if getline(plnum) =~? '^\s*\(*if\|*do\|*else\|*elseif\|*create\)\>'
+  if getline(plnum) =~? '^\s*\(*if\|*do\|*else\|*elseif\|*create\|*dowhile\)\>'
     let curind = curind + &sw
   endif
 
