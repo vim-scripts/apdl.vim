@@ -1,6 +1,11 @@
-let $PATH = $PATH . ';C:\Program Files (x86)\Mozilla Firefox'
+if has('win32')
+    let $PATH = $PATH . ';C:\Program Files (x86)\Mozilla Firefox'
+    let g:ansys_dir = 'C:/Program Files/ANSYS Inc/v150/'
+else
+    let g:ansys_dir = '/opt/ansys/ANSYS Inc/v150/'
+endif
+
 " define Ansys path
-let g:ansys_dir = 'C:/Program Files/ANSYS Inc/v150/'
 " Initiate a web browser (firefox) and open the documentation for a specific
 " APDL-command
 function! Browser (cmd)
@@ -9,10 +14,10 @@ function! Browser (cmd)
     let a:command = toupper(a:cmd)
     try
         let helpfile = g:apdl_cmd_dict[a:command]
-        exec ':silent !firefox.exe ' . "\"" . 'file:///' . a:ansys_cmd . helpfile . "\""
+        exec ':silent !firefox ' . "\"" . 'file:///' . a:ansys_cmd . helpfile . "\""
     catch
         let helpfile = g:apdl_ele_dict[a:command]
-        exec ':silent !firefox.exe ' . "\"" . 'file:///' . a:ansys_ele . helpfile . "\""
+        exec ':silent !firefox ' . "\"" . 'file:///' . a:ansys_ele . helpfile . "\""
     endtry
 endfunction
 
